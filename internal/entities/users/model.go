@@ -18,8 +18,7 @@ type User struct {
 	Email      string         `gorm:"column:email" json:"email"`
 	Login      string         `gorm:"column:login;unique"  json:"login"`
 	Password   string         `gorm:"column:password"  json:"password"`
-	Active     bool           `gorm:"column:active" json:"active"`
-	Budget     float64        `gorm:"column:budget" json:"budget"`
+	Limit      float64        `gorm:"column:limit" json:"limit"`
 	CreatedAt  *time.Time     `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt  *time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
