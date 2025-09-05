@@ -1,0 +1,10 @@
+{
+  "postgre_sql_old": {
+    "host": "localhost",
+    "user": "postgres",
+    "port": "5432",
+    "db_name": "family_budget",
+    "pass": "postgres",
+    "ssl_mode": "disable"
+  }
+}

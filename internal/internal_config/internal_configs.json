@@ -1,0 +1,15 @@
+{
+  "server": {
+    "server_name": "localhost",
+    "port_run": 8000,
+    "realm": "",
+    "is_dev": true
+  },
+  "application": {
+    "secret_key": "family_budget",
+    "access_key": "cba7d7484d583524c9b9ca047a8681f750e8bac1644cd143d7f51212a2c7d8f4",
+    "refresh_key": "e307147901c8b92ee97a0d9396239b6200be569f7fcdff2e803447c9c21fbedc",
+    "accessTknTimeout":300000,
+    "refreshTknTimeout":36000000
+  }
+}
