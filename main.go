@@ -3,6 +3,8 @@ package main
 import (
 	"family_budget/internal/api"
 	"family_budget/internal/internal_config"
+	"family_budget/internal/logger"
+	"family_budget/internal/utils/migration"
 	"family_budget/pkg/database"
 	"family_budget/pkg/external_config"
 )
@@ -23,9 +25,11 @@ import (
 // @produce json
 // @schemes https
 func main() {
+	logger.InitLogger()
 	external_config.ExternalSetup("./pkg/external_config/external_configs.json")
 	internal_config.InternalSetup("./internal/internal_config/internal_configs.json")
 
 	database.SetupDB()
+	migration.AutoMigrate()
 	api.Init()
 }
