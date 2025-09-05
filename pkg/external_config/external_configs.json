@@ -1,5 +1,5 @@
 {
-  "postgre_sql_old": {
+  "postgre_sql": {
     "host": "localhost",
     "user": "postgres",
     "port": "5432",

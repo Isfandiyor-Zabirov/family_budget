@@ -1,4 +1,4 @@
-package client
+package database
 
 import (
 	"family_budget/pkg/external_config"
