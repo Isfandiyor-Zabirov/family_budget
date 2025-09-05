@@ -2,6 +2,7 @@ package users
 
 import (
 	"family_budget/internal/entities/family"
+	"family_budget/internal/entities/roles"
 	"time"
 
 	"gorm.io/gorm"
@@ -23,6 +24,7 @@ type User struct {
 	UpdatedAt  *time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
 	FamilyFK   family.Family  `gorm:"foreignKey:FamilyID" json:"-"`
+	RoleFK     roles.Roles    `gorm:"foreignKey:RoleID" json:"-"`
 }
 
 func (*User) TableName() string {
