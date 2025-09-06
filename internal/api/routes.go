@@ -97,7 +97,10 @@ func ping(c *gin.Context) {
 // CORSMiddleware controls course middleware
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		origin := c.Request.Header.Get("Origin")
+		if origin != "" {
+			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
+		}
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Start-Encoding, X-CSRF-Token, Authorization, Refresh-Authorization")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
