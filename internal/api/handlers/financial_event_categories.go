@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"family_budget/internal/entities/family"
 	"family_budget/internal/entities/financial_event_categories"
 	"family_budget/internal/utils/response"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // CreateFinancialEventCategory - Создание категории финансовых событии
@@ -82,4 +85,166 @@ func UpdateFinancialEventCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, resp)
+}
+
+// DeleteFinancialEventCategory - Удаление категории финансовых событий
+// @Summary      Удаление категории финансовых событий
+// @Description  Удаляет категорию по её ID
+// @ID           delete-financial-event-category
+// @Tags         Категории финансовых событий
+// @Produce      json
+// @Security     JWT
+// @Param        id   path      int  true  "ID категории для удаления"
+// @Success      200  {object}  response.ResponseModel
+// @Failure      400  {object}  response.ResponseModel "Неверный формат ID"
+// @Failure      404  {object}  response.ResponseModel "Категория не найдена"
+// @Failure      500  {object}  response.ResponseModel "Внутренняя ошибка сервера"
+// @Router       /api/v1/financial_event_categories/{id} [delete]
+func DeleteFinancialEventCategory(c *gin.Context) {
+	var (
+		ctxData = getClaimsFromContext(c)
+		err     error
+	)
+
+	// TODO: check access by roleID or userID
+
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
+		resp := response.SetResponseData(nil, "Неверный формат ID", false)
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	_, err = financial_event_categories.Get(id)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler fec id not found: %d", id)
+		resp := response.SetResponseData(nil, "ID финансовой категории не найдена", false)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	}
+
+	familyID := ctxData.FamilyID
+
+	_, err = family.Get(familyID)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler family id not found: %d", familyID)
+		resp := response.SetResponseData(nil, "ID семьи не найдена", false)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	}
+
+	resp, err := financial_event_categories.Delete(id, familyID)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler delete fec fails: %d, %d", id, familyID)
+		resp := response.SetResponseData(nil, "Ошибка на стороне сервера", false)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// DeleteFinancialEventCategory - Получении категории финансовых событий
+// @Summary      Получения категории финансовых событий
+// @Description  Получения категории по её ID
+// @ID           delete-financial-event-category
+// @Tags         Категории финансовых событий
+// @Produce      json
+// @Security     JWT
+// @Param        id   path      int  true  "ID категории для получения"
+// @Success      200  {object}  response.ResponseModel
+// @Failure      400  {object}  response.ResponseModel "Неверный формат ID"
+// @Failure      404  {object}  response.ResponseModel "Категория не найдена"
+// @Failure      500  {object}  response.ResponseModel "Внутренняя ошибка сервера"
+// @Router       /api/v1/financial_event_categories/{id} [get]
+func GetFinancialEventCategory(c *gin.Context) {
+	var err error
+
+	// TODO: check access by roleID or userID
+
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
+		resp := response.SetResponseData(nil, "Неверный формат ID", false)
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	resp, err := financial_event_categories.Get(id)
+	if err != nil {
+		log.Printf("DeleteFinancialEventCategory handler fec id not found: %d", id)
+		resp := response.SetResponseData(nil, "Финансовая категория не найдена", false)
+		c.JSON(http.StatusNotFound, resp)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetFinancialEventCategoryList - Получение списка категорий финансовых событий
+// @Summary      Получение списка категорий финансовых событий
+// @Description  Возвращает постраничный список категорий, принадлежащих семье пользователя
+// @ID           get-financial-event-category-list
+// @Tags         Категории финансовых событий
+// @Produce      json
+// @Security     JWT
+// @Param        page   query     int    false  "Номер страницы" default(1)
+// @Param        limit  query     int    false  "Количество элементов на странице" default(10)
+// @Param        search query     string false  "Текст для поиска по названию и описанию"
+// @Success      200    {object}  response.PaginatedResponse
+// @Failure      400    {object}  response.ResponseModel "Неверные параметры запроса"
+// @Failure      500    {object}  response.ResponseModel "Внутренняя ошибка сервера"
+// @Router       /api/v1/financial_event_categories [get]
+func GetFinancialEventCategoryList(c *gin.Context) {
+	var (
+		ctxData = getClaimsFromContext(c)
+		filters financial_event_categories.Filters
+	)
+
+	// TODO: check access by roleID or userID
+
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "10")
+
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		resp := response.SetResponseData(nil, "Неверный формат номера страницы", false)
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil || limit < 1 {
+		resp := response.SetResponseData(nil, "Неверный формат лимита на страницу", false)
+		c.JSON(http.StatusBadRequest, resp)
+		return
+	}
+
+	filters.CurrentPage = page
+	filters.PageLimit = limit
+	filters.FamilyID = ctxData.FamilyID
+
+	searchStr := c.Query("search")
+	if searchStr != "" {
+		filters.Search = &searchStr
+	}
+
+	resp, pagination, err := financial_event_categories.GetList(filters)
+	if err != nil {
+		log.Printf("GetFinancialEventCategoryList handler error: %v", err)
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	finalResponse := response.PaginatedResponse{
+		Success:    resp.Success,
+		Message:    resp.Message,
+		Data:       resp.Data,
+		Pagination: pagination,
+	}
+
+	c.JSON(http.StatusOK, finalResponse)
 }

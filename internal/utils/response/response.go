@@ -33,3 +33,10 @@ func SetPagination(totalPages uint64, totalRows int64, currentPage int) Paginati
 		CurrentPage: uint64(currentPage),
 	}
 }
+
+type PaginatedResponse struct {
+	Success    bool        `json:"success"`
+	Message    string      `json:"message"`
+	Data       interface{} `json:"data"`
+	Pagination Pagination  `json:"pagination"`
+}

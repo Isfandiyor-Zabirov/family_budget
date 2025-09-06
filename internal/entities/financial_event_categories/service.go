@@ -30,6 +30,8 @@ func Update(fec *FinancialEventCategories) (resp response.ResponseModel, err err
 }
 
 func Delete(id, familyID int) (resp response.ResponseModel, err error) {
+	// TODO: надо возвращать конкретные ошибки типо fec не найден или база недоступна
+
 	fec, err := getFec(id)
 	if err != nil {
 		resp = response.SetResponseData(FinancialEventCategories{}, "Что-то пошло не так", false)

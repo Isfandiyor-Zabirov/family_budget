@@ -65,3 +65,38 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 2025/09/06 12:30:51 login:  isfand
 2025/09/06 12:30:51 isfand
 [GIN] 127.0.0.1 - [Sat, 06 Sep 2025 12:30:53 +05] "POST /api/v1/register HTTP/1.1 200 1.2044449s "insomnia/11.3.0"  
+2025/09/06 10:36:20 Logging to file: internal/logger/logs.log
+2025/09/06 10:36:20 externalConfigs: {{localhost postgres 5432 family_budget postgres disable}}
+2025/09/06 10:36:20 Database successfully connected! 
+[GIN-debug] POST   /api/v1/register          --> family_budget/internal/api/handlers.Register (6 handlers)
+[GIN-debug] POST   /api/v1/login             --> family_budget/middleware.(*GinJWTMiddleware).LoginHandler-fm (6 handlers)
+[GIN-debug] GET    /api/v1/refresh           --> family_budget/middleware.(*GinJWTMiddleware).RefreshToken-fm (6 handlers)
+[GIN-debug] GET    /api/v1/get_me            --> family_budget/internal/api/handlers.GetMe (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.GetFinancialEventCategoryList (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.GetFinancialEventCategory (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.UpdateFinancialEventCategory (7 handlers)
+[GIN-debug] DELETE /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.DeleteFinancialEventCategory (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories/family --> family_budget/internal/api/handlers.CreateFamily (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/family/{id} --> family_budget/internal/api/handlers.GetFamily (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories/family --> family_budget/internal/api/handlers.UpdateFamily (7 handlers)
+[GIN-debug] DELETE /api/v1/financial_event_categories/family/{id} --> family_budget/internal/api/handlers.DeleteFamily (7 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (7 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8000
+[GIN] ::1 - [Sat, 06 Sep 2025 10:36:34 UTC] "POST /auth/register HTTP/1.1 404 81.603µs "curl/8.5.0"  
+2025/09/06 10:37:52 Register handler cannot bind the request: Key: 'RegistrationData.Phone' Error:Field validation for 'Phone' failed on the 'required' tag
+Key: 'RegistrationData.FamilyName' Error:Field validation for 'FamilyName' failed on the 'required' tag
+[GIN] ::1 - [Sat, 06 Sep 2025 10:37:52 UTC] "POST /api/v1/register HTTP/1.1 400 484.635µs "curl/8.5.0"  
+2025/09/06 10:39:53 Register handler cannot bind the request: Key: 'RegistrationData.Phone' Error:Field validation for 'Phone' failed on the 'required' tag
+Key: 'RegistrationData.FamilyName' Error:Field validation for 'FamilyName' failed on the 'required' tag
+[GIN] ::1 - [Sat, 06 Sep 2025 10:39:53 UTC] "POST /api/v1/register HTTP/1.1 400 311.209µs "curl/8.5.0"  
+2025/09/06 10:39:58 Register handler cannot bind the request: Key: 'RegistrationData.Phone' Error:Field validation for 'Phone' failed on the 'required' tag
+Key: 'RegistrationData.FamilyName' Error:Field validation for 'FamilyName' failed on the 'required' tag
+[GIN] ::1 - [Sat, 06 Sep 2025 10:39:58 UTC] "POST /api/v1/register HTTP/1.1 400 181.02µs "curl/8.5.0"  
+2025/09/06 10:40:02 Register handler cannot bind the request: Key: 'RegistrationData.Phone' Error:Field validation for 'Phone' failed on the 'required' tag
+Key: 'RegistrationData.FamilyName' Error:Field validation for 'FamilyName' failed on the 'required' tag
+[GIN] ::1 - [Sat, 06 Sep 2025 10:40:02 UTC] "POST /api/v1/register HTTP/1.1 400 171.919µs "curl/8.5.0"  
+2025/09/06 10:40:12 Register handler cannot bind the request: invalid character '}' looking for beginning of object key string
+[GIN] ::1 - [Sat, 06 Sep 2025 10:40:12 UTC] "POST /api/v1/register HTTP/1.1 400 141.43µs "curl/8.5.0"  

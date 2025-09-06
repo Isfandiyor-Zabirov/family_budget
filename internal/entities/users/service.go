@@ -31,11 +31,11 @@ func UpdatePassword(oldPassword, newPassword string, userID int) error {
 	}
 
 	if existingUser.ID == 0 {
-		return errors.New("Пользователь не найден ")
+		return errors.New("пользователь не найден ")
 	}
 
 	if !checkPassword(existingUser.Password, oldPassword) {
-		return errors.New("Неверный пароль ")
+		return errors.New("неверный пароль ")
 	}
 
 	return updatePassword(hashPassword(newPassword), userID)
@@ -53,22 +53,19 @@ func hashPassword(password string) string {
 // checkPassword - создает хэш
 func checkPassword(provided, existing string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(provided), []byte(existing))
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 func validateString(str string, min, max int) error {
 	symbols := []rune(str)
 
 	if len(symbols) < min || len(symbols) > max {
-		return errors.New(fmt.Sprintf("Длина должна быть между %v и %v", min, max))
+		return fmt.Errorf("длина должна быть между %v и %v", min, max)
 	}
 
 	for _, val := range symbols {
 		if (val >= 'а' && val <= 'я') || (val >= 'А' && val <= 'Я') {
-			return errors.New(fmt.Sprintf("Логин содержит кирилицу!"))
+			return fmt.Errorf("логин содержит кирилицу")
 		}
 	}
 
@@ -84,7 +81,7 @@ func checkLogin(login string) (string, error) {
 		return "", err
 	}
 	if loginExists(login) {
-		return "", errors.New("Логин занят, введите другой логин!")
+		return "", errors.New("логин занят, введите другой логин")
 	}
 
 	return login, nil

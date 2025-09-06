@@ -54,7 +54,7 @@ func getMe(userID int) (me Me, err error) {
 						where u.role_id = r.id and u.id = ?`
 	if err = database.Postgres().Raw(userSqlQuery, userID).Scan(&me.UserData).Error; err != nil {
 		log.Println("getMe func user data query error:", err.Error())
-		return Me{}, errors.New("Ошибка сервера ")
+		return Me{}, errors.New("ошибка сервера ")
 	}
 
 	accessGroupSql := `select ag.id as access_group_id, ag.code as access_group_code, ag.name as access_group_name from access_groups ag`
@@ -67,7 +67,7 @@ func getMe(userID int) (me Me, err error) {
 
 	if err = database.Postgres().Raw(accessGroupSql).Scan(&accessGroupInfo).Error; err != nil {
 		log.Println("getMe func accessGroupSql query error:", err.Error())
-		return Me{}, errors.New("Ошибка сервера ")
+		return Me{}, errors.New("ошибка сервера ")
 	}
 
 	accessSqlQuery := `select 
@@ -85,7 +85,7 @@ func getMe(userID int) (me Me, err error) {
 		accesses.AccessGroupName = row.AccessGroupName
 		if err = database.Postgres().Raw(accessSqlQuery, row.AccessGroupID, userID).Scan(&accesses.Accesses).Error; err != nil {
 			log.Println("getMe func access list query error:", err.Error())
-			return Me{}, errors.New("Ошибка сервера ")
+			return Me{}, errors.New("ошибка сервера ")
 		}
 		me.AccessList = append(me.AccessList, accesses)
 	}
@@ -214,10 +214,7 @@ func register(d *RegistrationData) (err error) {
 func loginExists(login string) bool {
 	count := 0
 	_ = database.Postgres().Raw("SELECT count(*) from users where login = ?", login).Scan(&count).Error
-	if count > 0 {
-		return true
-	}
-	return false
+	return count > 0
 }
 
 var phoneLengthTj = 13
@@ -230,7 +227,7 @@ func validatePhoneTj(phone string) (string, error) {
 			return "", err
 		}
 		log.Println("phone doesn't match regex :", phone)
-		return "", errors.New("Неверная структура номера (подсказка: 900-00-00-00) ")
+		return "", errors.New("неверная структура номера (подсказка: 900-00-00-00)")
 	}
 	if len(phone) == phoneLengthTj-4 {
 		phone = "992" + phone
