@@ -24,7 +24,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/financial_event_categories": {
+        "/api/v1/get_me": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Получение данные текущего пользователя",
+                "operationId": "get-me",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/financial_event_categories": {
             "get": {
                 "security": [
                     {
@@ -180,7 +211,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/financial_event_categories/{id}": {
+        "/financial_event_categories/{id}": {
             "get": {
                 "security": [
                     {
@@ -284,38 +315,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/get_me": {
-            "get": {
-                "security": [
-                    {
-                        "JWT": []
-                    }
-                ],
+        "/login": {
+            "post": {
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Пользователи"
+                    "Регистрация и Авторизация"
                 ],
-                "summary": "Получение данные текущего пользователя",
-                "operationId": "get-me",
+                "summary": "Авторизация пользователя",
+                "operationId": "authorize-user",
+                "parameters": [
+                    {
+                        "description": "Даные для авторизации",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/middleware.Login"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseModel"
+                            "$ref": "#/definitions/middleware.ResponseStruct"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "reason",
                         "schema": {
-                            "$ref": "#/definitions/response.ResponseModel"
+                            "type": "string"
+                        }
+                    },
+                    "401": {
+                        "description": "reason",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "402": {
+                        "description": "reason",
+                        "schema": {
+                            "type": "string"
                         }
                     }
                 }
             }
         },
-        "/api/v1/register": {
+        "/register": {
             "post": {
                 "security": [
                     {
@@ -420,55 +469,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseModel"
-                        }
-                    }
-                }
-            }
-        },
-        "/visor/login": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Регистрация и Авторизация"
-                ],
-                "summary": "Авторизация пользователя",
-                "operationId": "authorize-user",
-                "parameters": [
-                    {
-                        "description": "Даные для авторизации",
-                        "name": "id",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/middleware.Login"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/middleware.ResponseStruct"
-                        }
-                    },
-                    "400": {
-                        "description": "reason",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "401": {
-                        "description": "reason",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "402": {
-                        "description": "reason",
-                        "schema": {
-                            "type": "string"
                         }
                     }
                 }

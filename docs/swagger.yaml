@@ -73,7 +73,26 @@ info:
   title: Family Budget API
   version: "1.0"
 paths:
-  /api/v1/financial_event_categories:
+  /api/v1/get_me:
+    get:
+      operationId: get-me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение данные текущего пользователя
+      tags:
+      - Пользователи
+  /financial_event_categories:
     get:
       description: Возвращает постраничный список категорий, принадлежащих семье пользователя
       operationId: get-financial-event-category-list
@@ -172,7 +191,7 @@ paths:
       summary: Изменение категории финансовых событии
       tags:
       - Категории финансовых событий
-  /api/v1/financial_event_categories/{id}:
+  /financial_event_categories/{id}:
     delete:
       description: Удаляет категорию по её ID
       operationId: delete-financial-event-category
@@ -239,26 +258,39 @@ paths:
       summary: Получения категории финансовых событий
       tags:
       - Категории финансовых событий
-  /api/v1/get_me:
-    get:
-      operationId: get-me
+  /login:
+    post:
+      operationId: authorize-user
+      parameters:
+      - description: Даные для авторизации
+        in: body
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/middleware.Login'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.ResponseModel'
+            $ref: '#/definitions/middleware.ResponseStruct'
         "400":
-          description: Bad Request
+          description: reason
           schema:
-            $ref: '#/definitions/response.ResponseModel'
-      security:
-      - JWT: []
-      summary: Получение данные текущего пользователя
+            type: string
+        "401":
+          description: reason
+          schema:
+            type: string
+        "402":
+          description: reason
+          schema:
+            type: string
+      summary: Авторизация пользователя
       tags:
-      - Пользователи
-  /api/v1/register:
+      - Регистрация и Авторизация
+  /register:
     post:
       operationId: register
       parameters:
@@ -328,38 +360,6 @@ paths:
       summary: Регистарция новых семей
       tags:
       - Регистрация
-  /visor/login:
-    post:
-      operationId: authorize-user
-      parameters:
-      - description: Даные для авторизации
-        in: body
-        name: id
-        required: true
-        schema:
-          $ref: '#/definitions/middleware.Login'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/middleware.ResponseStruct'
-        "400":
-          description: reason
-          schema:
-            type: string
-        "401":
-          description: reason
-          schema:
-            type: string
-        "402":
-          description: reason
-          schema:
-            type: string
-      summary: Авторизация пользователя
-      tags:
-      - Регистрация и Авторизация
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

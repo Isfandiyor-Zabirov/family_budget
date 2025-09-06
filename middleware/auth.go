@@ -243,7 +243,7 @@ func (mw *GinJWTMiddleware) sendCaptcha(c *gin.Context, userCache *attempt) {
 // @Failure 400 {string} string "reason"
 // @Failure 401 {string} string "reason"
 // @Failure 402 {string} string "reason"
-// @Router /visor/login [post]
+// @Router /login [post]
 func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	_ = mw.MiddlewareInit()
 	var loginVals Login

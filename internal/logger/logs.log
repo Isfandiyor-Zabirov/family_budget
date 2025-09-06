@@ -180,3 +180,4 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 [GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-ui-bundle.js HTTP/1.1 200 201.4632ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
 [GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/doc.json HTTP/1.1 200 77.2µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
 [GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/favicon-32x32.png HTTP/1.1 200 75.8µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:44:35 +05] "POST /api/v1/api/v1/register HTTP/1.1 404 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  

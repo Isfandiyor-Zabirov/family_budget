@@ -23,3 +23,8 @@ type Transactions struct {
 func (*Transactions) TableName() string {
 	return "transactions"
 }
+
+type Filters struct {
+	FamilyID int
+	UserID   int
+}

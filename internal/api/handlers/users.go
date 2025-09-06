@@ -57,7 +57,7 @@ func CreateUser(c *gin.Context) {
 // @Param home_phone  		body string false "Номер домашнего телефона"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
-// @Router /api/v1/register [post]
+// @Router /register [post]
 func Register(c *gin.Context) {
 	var (
 		request users.RegistrationData
