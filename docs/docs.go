@@ -25,6 +25,64 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/api/v1/financial_event_categories": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Возвращает постраничный список категорий, принадлежащих семье пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Категории финансовых событий"
+                ],
+                "summary": "Получение списка категорий финансовых событий",
+                "operationId": "get-financial-event-category-list",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Номер страницы",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Количество элементов на странице",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Текст для поиска по названию и описанию",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.PaginatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверные параметры запроса",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -67,6 +125,110 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/financial_event_categories/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Получения категории по её ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Категории финансовых событий"
+                ],
+                "summary": "Получения категории финансовых событий",
+                "operationId": "delete-financial-event-category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID категории для получения",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "404": {
+                        "description": "Категория не найдена",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Удаляет категорию по её ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Категории финансовых событий"
+                ],
+                "summary": "Удаление категории финансовых событий",
+                "operationId": "delete-financial-event-category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID категории для удаления",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "404": {
+                        "description": "Категория не найдена",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
                         "schema": {
                             "$ref": "#/definitions/response.ResponseModel"
                         }
@@ -269,8 +431,8 @@ const docTemplate = `{
         "middleware.Login": {
             "type": "object",
             "required": [
-                "password",
-                "username"
+                "login",
+                "password"
             ],
             "properties": {
                 "captcha": {
@@ -279,13 +441,13 @@ const docTemplate = `{
                 "device_uuid": {
                     "type": "string"
                 },
+                "login": {
+                    "type": "string"
+                },
                 "otp": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }
@@ -307,6 +469,35 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "string"
+                }
+            }
+        },
+        "response.PaginatedResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "pagination": {
+                    "$ref": "#/definitions/response.Pagination"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.Pagination": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "type": "integer"
+                },
+                "total_rows": {
+                    "type": "integer"
                 }
             }
         },

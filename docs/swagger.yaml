@@ -6,15 +6,15 @@ definitions:
         type: string
       device_uuid:
         type: string
+      login:
+        type: string
       otp:
         type: string
       password:
         type: string
-      username:
-        type: string
     required:
+    - login
     - password
-    - username
     type: object
   middleware.ResponseStruct:
     properties:
@@ -28,6 +28,25 @@ definitions:
         type: string
       user_id:
         type: string
+    type: object
+  response.PaginatedResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/response.Pagination'
+      success:
+        type: boolean
+    type: object
+  response.Pagination:
+    properties:
+      current_page:
+        type: integer
+      total_pages:
+        type: integer
+      total_rows:
+        type: integer
     type: object
   response.ResponseModel:
     properties:
@@ -55,6 +74,44 @@ info:
   version: "1.0"
 paths:
   /api/v1/financial_event_categories:
+    get:
+      description: Возвращает постраничный список категорий, принадлежащих семье пользователя
+      operationId: get-financial-event-category-list
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        name: limit
+        type: integer
+      - description: Текст для поиска по названию и описанию
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.PaginatedResponse'
+        "400":
+          description: Неверные параметры запроса
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение списка категорий финансовых событий
+      tags:
+      - Категории финансовых событий
     post:
       operationId: create-financial-event-category
       parameters:
@@ -83,6 +140,73 @@ paths:
       security:
       - JWT: []
       summary: Изменение категории финансовых событии
+      tags:
+      - Категории финансовых событий
+  /api/v1/financial_event_categories/{id}:
+    delete:
+      description: Удаляет категорию по её ID
+      operationId: delete-financial-event-category
+      parameters:
+      - description: ID категории для удаления
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Категория не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Удаление категории финансовых событий
+      tags:
+      - Категории финансовых событий
+    get:
+      description: Получения категории по её ID
+      operationId: delete-financial-event-category
+      parameters:
+      - description: ID категории для получения
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Категория не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получения категории финансовых событий
       tags:
       - Категории финансовых событий
   /api/v1/get_me:
