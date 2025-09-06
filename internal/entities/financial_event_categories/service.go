@@ -9,22 +9,22 @@ import (
 func Create(fec *FinancialEventCategories) (resp response.ResponseModel, err error) {
 	_, err = createFec(fec)
 	if err != nil {
-		resp = response.SetResponseData(FinancialEventCategories{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, FinancialEventCategories{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(fec, "Категория успешно добавлена", true)
+	response.SetResponseData(&resp, fec, "Категория успешно добавлена", true, 0, 0, 0)
 	return
 }
 
 func Update(fec *FinancialEventCategories) (resp response.ResponseModel, err error) {
 	updated, err := updateFec(fec)
 	if err != nil {
-		resp = response.SetResponseData(FinancialEventCategories{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, FinancialEventCategories{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(updated, "Категория успешно обновлена", true)
+	response.SetResponseData(&resp, updated, "Категория успешно обновлена", true, 0, 0, 0)
 
 	return
 }
@@ -34,12 +34,12 @@ func Delete(id, familyID int) (resp response.ResponseModel, err error) {
 
 	fec, err := getFec(id)
 	if err != nil {
-		resp = response.SetResponseData(FinancialEventCategories{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, FinancialEventCategories{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
 	if fec.FamilyID != familyID {
-		resp = response.SetResponseData(FinancialEventCategories{}, "Нет доступа к чужим данным", false)
+		response.SetResponseData(&resp, FinancialEventCategories{}, "Нет доступа к чужим данным", false, 0, 0, 0)
 		err = errors.New("Family IDs not matched ")
 		log.Println("FinancialEventCategories Delete func family ID checking error:", err.Error())
 		return
@@ -47,10 +47,10 @@ func Delete(id, familyID int) (resp response.ResponseModel, err error) {
 
 	err = deleteFec(&fec)
 	if err != nil {
-		resp = response.SetResponseData(FinancialEventCategories{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, FinancialEventCategories{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
-	resp = response.SetResponseData(fec, "Категория успешно удалена", true)
+	response.SetResponseData(&resp, fec, "Категория успешно удалена", true, 0, 0, 0)
 	return
 }
 
@@ -58,15 +58,13 @@ func Get(id int) (FinancialEventCategories, error) {
 	return getFec(id)
 }
 
-func GetList(filters Filters) (resp response.ResponseModel, pagination response.Pagination, err error) {
+func GetList(filters Filters) (resp response.ResponseModel, err error) {
 	list, total, err := getList(filters)
 	if err != nil {
-		resp = response.SetResponseData([]FinancialEventCategories{}, "Что-то пошло не так", false)
-		pagination = response.SetPagination(0, 1, 1)
+		response.SetResponseData(&resp, []FinancialEventCategories{}, "Что-то пошло не так", false, filters.PageLimit, total, filters.CurrentPage)
 		return
 	}
 
-	resp = response.SetResponseData(list, "Успех", true)
-	pagination = response.SetPagination(response.CalculateTotalPages(total, filters.PageLimit), total, filters.CurrentPage)
+	response.SetResponseData(&resp, list, "Успех", true, filters.PageLimit, total, filters.CurrentPage)
 	return
 }

@@ -30,3 +30,7 @@ func AssignAccessesToRole(r roles.Roles) (ras []RoleAccess) {
 	}
 	return ras
 }
+
+func CheckAccess(accessGroup, access string, userID int) bool {
+	return checkAccess(accessGroup, access, userID)
+}

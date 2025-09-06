@@ -4,11 +4,11 @@ import (
 	"family_budget/internal/entities/family"
 	"family_budget/internal/entities/financial_event_categories"
 	"family_budget/internal/utils/response"
+	"family_budget/middleware"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 // CreateFinancialEventCategory - Создание категории финансовых событии
@@ -27,20 +27,25 @@ func CreateFinancialEventCategory(c *gin.Context) {
 		ctxData = getClaimsFromContext(c)
 		request financial_event_categories.FinancialEventCategories
 		err     error
+		resp    response.ResponseModel
 	)
 
-	// TODO: check access by roleID or userID
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.CREATE, ctxData.UserID) {
+		response.SetResponseData(resp, request, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
 
 	if err = c.ShouldBindJSON(&request); err != nil {
 		log.Println("CreateFinancialEventCategory handler cannot bind the request")
-		resp := response.SetResponseData(request, "Неверная структура запроса", false)
+		response.SetResponseData(resp, request, "Неверная структура запроса", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
 	request.FamilyID = ctxData.FamilyID
 
-	resp, err := financial_event_categories.Create(&request)
+	resp, err = financial_event_categories.Create(&request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp)
 		return
@@ -65,20 +70,25 @@ func UpdateFinancialEventCategory(c *gin.Context) {
 		ctxData = getClaimsFromContext(c)
 		request financial_event_categories.FinancialEventCategories
 		err     error
+		resp    response.ResponseModel
 	)
 
-	// TODO: check access by roleID or userID
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
+		response.SetResponseData(resp, request, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
 
 	if err = c.ShouldBindJSON(&request); err != nil {
 		log.Println("CreateFinancialEventCategory handler cannot bind the request")
-		resp := response.SetResponseData(request, "Неверная структура запроса", false)
+		response.SetResponseData(&resp, request, "Неверная структура запроса", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
 	request.FamilyID = ctxData.FamilyID
 
-	resp, err := financial_event_categories.Create(&request)
+	resp, err = financial_event_categories.Create(&request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp)
 		return
@@ -104,15 +114,20 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
 		err     error
+		resp    response.ResponseModel
 	)
 
-	// TODO: check access by roleID or userID
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.DELETE, ctxData.UserID) {
+		response.SetResponseData(resp, nil, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
-		resp := response.SetResponseData(nil, "Неверный формат ID", false)
+		response.SetResponseData(&resp, nil, "Неверный формат ID", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
@@ -120,7 +135,7 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 	_, err = financial_event_categories.Get(id)
 	if err != nil {
 		log.Printf("DeleteFinancialEventCategory handler fec id not found: %d", id)
-		resp := response.SetResponseData(nil, "ID финансовой категории не найдена", false)
+		response.SetResponseData(&resp, nil, "ID финансовой категории не найдена", false, 0, 0, 0)
 		c.JSON(http.StatusNotFound, resp)
 		return
 	}
@@ -130,15 +145,13 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 	_, err = family.Get(familyID)
 	if err != nil {
 		log.Printf("DeleteFinancialEventCategory handler family id not found: %d", familyID)
-		resp := response.SetResponseData(nil, "ID семьи не найдена", false)
+		response.SetResponseData(&resp, nil, "ID семьи не найдена", false, 0, 0, 0)
 		c.JSON(http.StatusNotFound, resp)
 		return
 	}
 
-	resp, err := financial_event_categories.Delete(id, familyID)
+	resp, err = financial_event_categories.Delete(id, familyID)
 	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler delete fec fails: %d, %d", id, familyID)
-		resp := response.SetResponseData(nil, "Ошибка на стороне сервера", false)
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
@@ -146,7 +159,7 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// DeleteFinancialEventCategory - Получении категории финансовых событий
+// GetFinancialEventCategory - Получении категории финансовых событий
 // @Summary      Получения категории финансовых событий
 // @Description  Получения категории по её ID
 // @ID           delete-financial-event-category
@@ -161,25 +174,32 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 // @Router       /api/v1/financial_event_categories/{id} [get]
 func GetFinancialEventCategory(c *gin.Context) {
 	var err error
+	ctxData := getClaimsFromContext(c)
+	var resp response.ResponseModel
 
-	// TODO: check access by roleID or userID
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
+		response.SetResponseData(resp, nil, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
-		resp := response.SetResponseData(nil, "Неверный формат ID", false)
+		response.SetResponseData(&resp, nil, "Неверный формат ID", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
-	resp, err := financial_event_categories.Get(id)
+	fec, err := financial_event_categories.Get(id)
 	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler fec id not found: %d", id)
-		resp := response.SetResponseData(nil, "Финансовая категория не найдена", false)
+		response.SetResponseData(&resp, nil, "Финансовая категория не найдена", false, 0, 0, 0)
 		c.JSON(http.StatusNotFound, resp)
 		return
 	}
+
+	resp.Data = fec
 
 	c.JSON(http.StatusOK, resp)
 }
@@ -202,23 +222,28 @@ func GetFinancialEventCategoryList(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
 		filters financial_event_categories.Filters
+		resp    response.ResponseModel
 	)
 
-	// TODO: check access by roleID or userID
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
+		response.SetResponseData(&resp, nil, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
 
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "10")
 
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page < 1 {
-		resp := response.SetResponseData(nil, "Неверный формат номера страницы", false)
+		response.SetResponseData(resp, nil, "Неверный формат номера страницы", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 1 {
-		resp := response.SetResponseData(nil, "Неверный формат лимита на страницу", false)
+		response.SetResponseData(resp, nil, "Неверный формат лимита на страницу", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
@@ -232,19 +257,12 @@ func GetFinancialEventCategoryList(c *gin.Context) {
 		filters.Search = &searchStr
 	}
 
-	resp, pagination, err := financial_event_categories.GetList(filters)
+	resp, err = financial_event_categories.GetList(filters)
 	if err != nil {
 		log.Printf("GetFinancialEventCategoryList handler error: %v", err)
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
 
-	finalResponse := response.PaginatedResponse{
-		Success:    resp.Success,
-		Message:    resp.Message,
-		Data:       resp.Data,
-		Pagination: pagination,
-	}
-
-	c.JSON(http.StatusOK, finalResponse)
+	c.JSON(http.StatusOK, resp)
 }

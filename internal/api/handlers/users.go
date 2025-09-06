@@ -3,23 +3,41 @@ package handlers
 import (
 	"family_budget/internal/entities/users"
 	"family_budget/internal/utils/response"
+	"family_budget/middleware"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 )
 
-type RegistrationData struct {
-	RoleID     int    `gorm:"column:role_id" json:"role_id"`
-	FamilyID   int    `gorm:"column:family_id" json:"family_id"`
-	Name       string `gorm:"column:name" binding:"required" json:"name"`
-	Surname    string `gorm:"column:surname" binding:"required" json:"surname"`
-	MiddleName string `gorm:"column:middle_name" json:"middle_name"`
-	Phone      string `gorm:"column:phone" binding:"required" json:"phone"`
-	Email      string `gorm:"column:email" json:"email"`
-	Login      string `gorm:"column:login" binding:"required" json:"login"`
-	Password   string `gorm:"column:password" binding:"required" json:"password"`
-	FamilyName string `gorm:"column:family_name" binding:"required" json:"family_name"`
-	HomePhone  string `gorm:"column:owner_phone" json:"owner_phone"`
+func CreateUser(c *gin.Context) {
+	var (
+		request users.User
+		err     error
+		ctxData = getClaimsFromContext(c)
+		resp    response.ResponseModel
+	)
+
+	if !middleware.CheckAccess(middleware.Users, middleware.CREATE, ctxData.UserID) {
+		response.SetResponseData(resp, request, "Доступ запрещен", false, 0, 0, 0)
+		c.JSON(http.StatusForbidden, resp)
+		return
+	}
+
+	if err = c.ShouldBindJSON(&request); err != nil {
+		log.Println("CreateUser handler cannot bind the request:", err.Error())
+		response.SetResponseData(&resp, []users.UserResp{}, "Что-то пошло не так", false, 0, 0, 0)
+		c.JSON(http.StatusBadRequest, resp)
+	}
+
+	request.FamilyID = ctxData.FamilyID
+
+	resp, err = users.CreateUser(&request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, resp)
+		return
+	}
+
+	c.JSON(http.StatusCreated, resp)
 }
 
 // Register - Регистрация
@@ -49,19 +67,19 @@ func Register(c *gin.Context) {
 
 	if err = c.ShouldBindJSON(&request); err != nil {
 		log.Println("Register handler cannot bind the request:", err.Error())
-		resp = response.SetResponseData(users.RegistrationData{}, "Неверная структура запроса", false)
+		response.SetResponseData(&resp, users.RegistrationData{}, "Неверная структура запроса", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
 	err = users.Register(&request)
 	if err != nil {
-		resp = response.SetResponseData(users.RegistrationData{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, users.RegistrationData{}, "Что-то пошло не так", false, 0, 0, 0)
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
 
-	resp = response.SetResponseData(users.RegistrationData{}, "Регистрация прошла успешно", true)
+	response.SetResponseData(&resp, users.RegistrationData{}, "Регистрация прошла успешно", true, 0, 0, 0)
 	c.JSON(http.StatusOK, resp)
 }
 

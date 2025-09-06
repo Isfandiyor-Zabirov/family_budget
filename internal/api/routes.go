@@ -62,11 +62,13 @@ func Init() {
 	financialEventCategories.DELETE("/financial-categories/{id}", handlers.DeleteFinancialEventCategory)
 
 	//////////////////////////////// Семья \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	family := v1.Group("financial_event_categories")
-	family.POST("/family", handlers.CreateFamily)
-	family.GET("/family/{id}", handlers.GetFamily)
-	family.PUT("/family", handlers.UpdateFamily)
-	family.DELETE("/family/{id}", handlers.DeleteFamily)
+	/*	family := v1.Group("financial_event_categories")
+		family.POST("/family", handlers.CreateFamily)
+		family.GET("/family/{id}", handlers.GetFamily)
+		family.PUT("/family", handlers.UpdateFamily)
+		family.DELETE("/family/{id}", handlers.DeleteFamily)*/
+	financialEventCategories.POST("", handlers.CreateFinancialEventCategory)
+	financialEventCategories.PUT("", handlers.UpdateFinancialEventCategory)
 
 	accounts := gin.Accounts{
 		"sakhi":  "family_budget",

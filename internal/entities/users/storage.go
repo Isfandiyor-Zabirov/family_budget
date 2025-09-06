@@ -37,6 +37,50 @@ func getUser(id int) (User, error) {
 	return repo.Get(db, id)
 }
 
+func getList(filters Filters) (resp []UserResp, totalRows int64, err error) {
+	query := database.Postgres().Table("users u").
+		Where("u.family_id = ? AND u.deleted_at IS NULL", filters.FamilyID).
+		Joins(`LEFT JOIN roles r ON r.id = u.role_id`)
+
+	if filters.Search != nil {
+		search := "%" + *filters.Search + "%"
+		query = query.Where("u.name ILIKE ? or u.surname ILIKE ? or u.middle_name ILIKE ? or u.phone ILIKE ? or u.email ILIKE ? or u.login ILIKE ?",
+			search, search, search, search, search, search)
+	}
+
+	if filters.RoleID != nil {
+		query = query.Where("u.role_id = ?", *filters.RoleID)
+	}
+
+	if filters.CurrentPage != 0 {
+		page := 1
+		filters.CurrentPage = page
+	}
+
+	if filters.PageLimit == 0 {
+		pageLimit := 20
+		filters.PageLimit = pageLimit
+	}
+
+	err = query.Count(&totalRows).Error
+	if err != nil {
+		log.Println("Failed to count Users", err.Error())
+		return []UserResp{}, 0, err
+	}
+
+	selectQuery := `u.id, u.name, u.surname, u.middle_name, u.phone, u.email, u.login, 
+			to_char(u.created_at, 'DD.MM.YYYY') as created_at_text, r.name as role`
+
+	err = query.Select(selectQuery).Offset(filters.PageLimit * (filters.CurrentPage - 1)).
+		Limit(filters.PageLimit).Order("fec.id desc").Scan(&resp).Error
+	if err != nil {
+		log.Println("User getList func query error:", err.Error())
+		return []UserResp{}, 0, err
+	}
+
+	return
+}
+
 func updatePassword(newHashedPassword string, userID int) error {
 	sqlQuery := `update users set password = ? where id = ?`
 

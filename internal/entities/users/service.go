@@ -9,14 +9,71 @@ import (
 	"strings"
 )
 
-func GetMe(userID int) (resp response.ResponseModel, err error) {
-	me, err := getMe(userID)
+func CreateUser(user *User) (resp response.ResponseModel, err error) {
+	created, err := createUser(user)
 	if err != nil {
-		resp = response.SetResponseData(Me{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, User{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(me, "Успех", true)
+	response.SetResponseData(&resp, created, "Пользователь успешно добавлен", true, 0, 0, 0)
+	return
+}
+
+func UpdateUser(user *User) (resp response.ResponseModel, err error) {
+	updated, err := updateUser(user)
+	if err != nil {
+		response.SetResponseData(&resp, User{}, "Что-то пошло не так", false, 0, 0, 0)
+		return
+	}
+
+	response.SetResponseData(&resp, updated, "Пользователь успешно обновлен", true, 0, 0, 0)
+	return
+}
+
+func DeleteUser(id, familyID int) (resp response.ResponseModel, err error) {
+	userDB, err := getUser(id)
+	if err != nil {
+		response.SetResponseData(&resp, User{}, "Что-то пошло не так", false, 0, 0, 0)
+		return
+	}
+
+	if userDB.FamilyID != familyID {
+		log.Println("User DeleteUser func trying to delete user with wrong familyID")
+		err = errors.New("user DeleteUser func trying to delete user with wrong familyID")
+		response.SetResponseData(&resp, User{}, "Нет доступа к чужим данным", false, 0, 0, 0)
+		return
+	}
+
+	err = deleteUser(&userDB)
+	if err != nil {
+		response.SetResponseData(&resp, User{}, "Что-то пошло не так", false, 0, 0, 0)
+		return
+	}
+
+	response.SetResponseData(&resp, userDB, "Пользователь успешно удален", true, 0, 0, 0)
+	return
+}
+
+func GetUserList(filters Filters) (resp response.ResponseModel, pagination response.Pagination, err error) {
+	list, total, err := getList(filters)
+	if err != nil {
+		response.SetResponseData(&resp, []UserResp{}, "Что-то пошло не так", false, 0, 0, 0)
+		return
+	}
+
+	response.SetResponseData(&resp, list, "Успех", true, filters.PageLimit, total, filters.CurrentPage)
+	return
+}
+
+func GetMe(userID int) (resp response.ResponseModel, err error) {
+	me, err := getMe(userID)
+	if err != nil {
+		response.SetResponseData(&resp, Me{}, "Что-то пошло не так", false, 0, 0, 0)
+		return
+	}
+
+	response.SetResponseData(&resp, me, "Успех", true, 0, 0, 0)
 	return
 }
 

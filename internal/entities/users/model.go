@@ -31,6 +31,20 @@ func (*User) TableName() string {
 	return "users"
 }
 
+type UserResp struct {
+	User
+	Role          string `json:"role"`
+	CreatedAtText string `json:"created_at_text"`
+}
+
+type Filters struct {
+	FamilyID    int     // for internal only
+	Search      *string `form:"search"`
+	RoleID      *int    `form:"search"`
+	CurrentPage int     `form:"current_page"`
+	PageLimit   int     `form:"page_limit"`
+}
+
 type GetUserResponseModel struct {
 	User
 	Role     string `json:"role"`

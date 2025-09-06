@@ -9,34 +9,34 @@ import (
 func CreateGoal(goal *Goals) (resp response.ResponseModel, err error) {
 	createdGoal, err := createGoal(goal)
 	if err != nil {
-		resp = response.SetResponseData(createdGoal, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, createdGoal, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(createdGoal, "Цель успешно создана", true)
+	response.SetResponseData(&resp, createdGoal, "Цель успешно создана", true, 0, 0, 0)
 	return
 }
 
 func UpdateGoal(goal *Goals) (resp response.ResponseModel, err error) {
 	updatedGoal, err := updateGoal(goal)
 	if err != nil {
-		resp = response.SetResponseData(updatedGoal, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, updatedGoal, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(updatedGoal, "Цель успешно обновлена", true)
+	response.SetResponseData(&resp, updatedGoal, "Цель успешно обновлена", true, 0, 0, 0)
 	return
 }
 
 func DeleteGoal(id, familyID int) (resp response.ResponseModel, err error) {
 	goal, err := getGoal(id)
 	if err != nil {
-		resp = response.SetResponseData(Goals{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, Goals{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
 	if goal.FamilyID != familyID {
-		resp = response.SetResponseData(Goals{}, "Нет доступа к чужим данным", false)
+		response.SetResponseData(&resp, Goals{}, "Нет доступа к чужим данным", false, 0, 0, 0)
 		err = errors.New("Family IDs not matched ")
 		log.Println("DeleteGoal func family ID checking error:", err.Error())
 		return
@@ -44,23 +44,21 @@ func DeleteGoal(id, familyID int) (resp response.ResponseModel, err error) {
 
 	err = deleteGoal(&goal)
 	if err != nil {
-		resp = response.SetResponseData(Goals{}, "Что-то пошло не так", false)
+		response.SetResponseData(&resp, Goals{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(goal, "Цель успешно удалена", true)
+	response.SetResponseData(&resp, goal, "Цель успешно удалена", true, 0, 0, 0)
 	return
 }
 
 func GetGoalsList(filters Filters) (resp response.ResponseModel, pagination response.Pagination, err error) {
 	list, total, err := getGoals(filters)
 	if err != nil {
-		resp = response.SetResponseData([]Goals{}, "Что-то пошло не так", false)
-		pagination = response.SetPagination(0, 1, 1)
+		response.SetResponseData(&resp, []Goals{}, "Что-то пошло не так", false, 0, 0, 0)
 		return
 	}
 
-	resp = response.SetResponseData(list, "Успех", true)
-	pagination = response.SetPagination(response.CalculateTotalPages(total, filters.PageLimit), total, filters.CurrentPage)
+	response.SetResponseData(&resp, list, "Успех", true, filters.PageLimit, total, filters.CurrentPage)
 	return
 }
