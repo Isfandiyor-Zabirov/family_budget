@@ -1,7 +1,10 @@
 package main
 
 import (
+	"family_budget/internal/auth"
 	"family_budget/internal/api"
+	"family_budget/internal/entities/users"
+	"family_budget/internal/handler"
 	"family_budget/internal/internal_config"
 	"family_budget/internal/logger"
 	"family_budget/internal/utils/migration"
@@ -31,5 +34,17 @@ func main() {
 
 	database.SetupDB()
 	migration.AutoMigrate()
-	api.Init()
+
+	db := database.Postgres()
+
+	jwtService := auth.NewJWTService() 
+
+	userStorage := users.NewUserStorage(db)
+	userService := users.NewUserService(userStorage, jwtService)
+	userHandler := handler.NewUserHandler(userService)
+
+	api.Init(
+		jwtService,
+		userHandler,
+	)
 }

@@ -1,6 +1,8 @@
 package api
 
 import (
+	"family_budget/internal/auth"
+	"family_budget/internal/handler"
 	"family_budget/internal/internal_config"
 	"family_budget/internal/logger"
 	"fmt"
@@ -14,7 +16,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Init() {
+func Init(
+	jwtService auth.JWTService,
+	userHandler *handler.UserHandler,
+) {
 	router := gin.Default()
 
 	customLogger := logger.GetLogger()
@@ -34,6 +39,20 @@ func Init() {
 	}
 
 	router.GET("/swagger/*any", gin.BasicAuth(accounts), ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	authMiddleware := AuthMiddleware(jwtService) 
+
+	authRoutes := router.Group("/auth")
+	{
+		authRoutes.POST("/register", userHandler.Register)
+		authRoutes.POST("/login", userHandler.Login)
+		authRoutes.POST("/refresh", userHandler.RefreshToken)
+	}
+
+	apiRoutes := router.Group("/api")
+    apiRoutes.Use(authMiddleware)
+    {
+    }
 
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"code": "PAGE_NOT_FOUND", "reason": "Страница не найдена"})
