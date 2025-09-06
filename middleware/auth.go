@@ -190,7 +190,7 @@ func (mw *GinJWTMiddleware) middlewareImpl(c *gin.Context) {
 	token, err := mw.parseToken(c)
 
 	if err != nil {
-		mw.unauthorized(c, http.StatusUnauthorized, err.Error())
+		mw.unauthorized(c, http.StatusForbidden, err.Error())
 		return
 	}
 
@@ -276,7 +276,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	userID, ok := mw.Authenticator(loginVals.Login, loginVals.Password, c, ipAddress, loginVals.Otp)
 
 	if !ok {
-		mw.unauthorized(c, http.StatusUnauthorized, "Неверный логин или пароль")
+		mw.unauthorized(c, http.StatusForbidden, "Неверный логин или пароль")
 		return
 	}
 
@@ -302,7 +302,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	accessToken, err := atToken.SignedString(mw.AccessKey)
 
 	if err != nil {
-		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token failed")
+		mw.unauthorized(c, http.StatusForbidden, "Create JWT Token failed")
 		return
 	}
 
@@ -327,7 +327,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 
 	if err != nil {
 		pretty.Logln("error: can't create jwt token ")
-		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token failed")
+		mw.unauthorized(c, http.StatusForbidden, "Create JWT Token failed")
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -353,7 +353,7 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 
 	if err != nil {
 		pretty.Logln("error: signing algorithm")
-		c.JSON(http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusForbidden, err.Error())
 		return
 	}
 
@@ -366,13 +366,13 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 	if expire < mw.TimeFunc().Unix() {
 		pretty.Logln("error: expired token")
 		fmt.Println("token is expired1")
-		mw.unauthorized(c, http.StatusUnauthorized, "token is expired")
+		mw.unauthorized(c, http.StatusForbidden, "token is expired")
 		return
 	}
 
 	if _, ok := token.Claims.(jwt.Claims); !ok && !token.Valid {
 		pretty.Logln("error: invalid token")
-		c.JSON(http.StatusUnauthorized, err)
+		c.JSON(http.StatusForbidden, err)
 		return
 	}
 
@@ -395,7 +395,7 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 
 	if err != nil {
 		pretty.Logln("error: can't create jwt token ")
-		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token failed")
+		mw.unauthorized(c, http.StatusForbidden, "Create JWT Token failed")
 		return
 	}
 
@@ -415,7 +415,7 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 
 	if err != nil {
 		pretty.Logln("error: can't create jwt token ")
-		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token failed")
+		mw.unauthorized(c, http.StatusForbidden, "Create JWT Token failed")
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -437,7 +437,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	origIat := int64(claims["orig_iat"].(float64))
 
 	if origIat < mw.TimeFunc().Add(-mw.MaxRefresh).Unix() {
-		mw.unauthorized(c, http.StatusUnauthorized, "Token is expired")
+		mw.unauthorized(c, http.StatusForbidden, "Token is expired")
 		return
 	}
 
@@ -457,7 +457,7 @@ func (mw *GinJWTMiddleware) RefreshHandler(c *gin.Context) {
 	tokenString, err := newToken.SignedString(mw.AccessKey)
 
 	if err != nil {
-		mw.unauthorized(c, http.StatusUnauthorized, "Create JWT Token failed")
+		mw.unauthorized(c, http.StatusForbidden, "Create JWT Token failed")
 		return
 	}
 
