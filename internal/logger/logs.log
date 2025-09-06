@@ -1,0 +1,24 @@
+2025/09/06 06:25:55 Logging to file: internal/logger/logs.log
+2025/09/06 06:25:55 externalConfigs: {{localhost postgres 5432 family_budget postgres disable}}
+2025/09/06 06:25:55 Database successfully connected! 
+[GIN-debug] POST   /api/v1/financial_event_categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (6 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (7 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8000
+2025/09/06 06:26:59 Logging to file: internal/logger/logs.log
+2025/09/06 06:26:59 externalConfigs: {{localhost postgres 5432 family_budget postgres disable}}
+2025/09/06 06:26:59 Database successfully connected! 
+[GIN-debug] POST   /api/v1/financial_event_categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (6 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (7 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8000
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/index.html HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/swagger-ui.css HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/index.css HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/swagger-ui-bundle.js HTTP/1.1 200 1.5725ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/swagger-ui-standalone-preset.js HTTP/1.1 200 1.4962ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/swagger-initializer.js HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/doc.json HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 06:27:01 +05] "GET /swagger/favicon-32x32.png HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  

@@ -22,7 +22,8 @@ func (*FinancialEventCategories) TableName() string {
 }
 
 type Filters struct {
+	Search      *string `form:"search"`
 	FamilyID    int     `form:"family_id"` // for internal use only
-	CurrentPage *uint64 `form:"current_page"`
-	PageLimit   *uint64 `form:"page_limit"`
+	CurrentPage int     `form:"current_page"`
+	PageLimit   int     `form:"page_limit"`
 }

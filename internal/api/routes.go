@@ -1,6 +1,7 @@
 package api
 
 import (
+	"family_budget/internal/api/handlers"
 	"family_budget/internal/internal_config"
 	"family_budget/internal/logger"
 	"fmt"
@@ -32,6 +33,14 @@ func Init() {
 		"eraj":   "family_budget",
 		"ismoil": "family_budget",
 	}
+
+	v1 := router.Group("api/v1")
+
+	// TODO: add middleware to v1
+
+	//////////////////////////////// Категории финансовых событий \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	financialEventCategories := v1.Group("financial_event_categories")
+	financialEventCategories.POST("", handlers.CreateFinancialEventCategory)
 
 	router.GET("/swagger/*any", gin.BasicAuth(accounts), ginSwagger.WrapHandler(swaggerFiles.Handler))
 

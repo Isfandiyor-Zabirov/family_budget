@@ -9,7 +9,7 @@ import (
 	"github.com/natefinch/lumberjack"
 )
 
-const logFileName = "files/logger/logs.log"
+const logFileName = "internal/logger/logs.log"
 
 var customLogger = &lumberjack.Logger{
 	Filename:   logFileName,

@@ -30,3 +30,28 @@ type User struct {
 func (*User) TableName() string {
 	return "users"
 }
+
+type GetUserResponseModel struct {
+	User
+	Role     string `json:"role"`
+	FullName string `json:"full_name"`
+}
+
+type Me struct {
+	UserData   GetUserResponseModel `json:"user_data"`
+	AccessList []MeAccessGroup      `json:"access_list"`
+}
+
+type MeAccessGroup struct {
+	AccessGroupID   int          `json:"access_group_id"`
+	AccessGroupCode string       `json:"access_group_code"`
+	AccessGroupName string       `json:"access_group_name"`
+	Accesses        []MeAccesses `json:"accesses"`
+}
+
+type MeAccesses struct {
+	AccessID   int    `json:"access_id"`
+	AccessCode string `json:"access_code"`
+	AccessName string `json:"access_name"`
+	Active     bool   `json:"active"`
+}
