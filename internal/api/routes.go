@@ -33,6 +33,7 @@ func Init() {
 	}
 
 	router := gin.Default()
+	router.Any("api/v1/ping", ping)
 
 	customLogger := logger.GetLogger()
 
@@ -87,6 +88,10 @@ func Init() {
 		fmt.Printf("Failed to start the app at the port: %d. The error is: %s", internal_config.InternalConfigs.Server.PortRun, err.Error())
 		return
 	}
+}
+
+func ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }
 
 // CORSMiddleware controls course middleware
