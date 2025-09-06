@@ -22,8 +22,33 @@ func getFec(id int) (FinancialEventCategories, error) {
 	return crud.NewRepository[FinancialEventCategories]().Get(database.Postgres(), id)
 }
 
-func getList(familyID int) (resp []FinancialEventCategories, totalRows int64, err error) {
-	err = database.Postgres().Find(&resp, "family_id = ?", familyID).Error
+func getList(filters Filters) (resp []FinancialEventCategories, totalRows int64, err error) {
+	query := database.Postgres().Table("financial_event_categories fec").
+		Where("fec.family_id = ? and fec.deleted_at is null", filters.FamilyID)
+
+	if filters.CurrentPage != 0 {
+		page := 1
+		filters.CurrentPage = page
+	}
+
+	if filters.PageLimit == 0 {
+		pageLimit := 20
+		filters.PageLimit = pageLimit
+	}
+
+	if filters.Search != nil {
+		searchText := "%" + *filters.Search + "%"
+		query = query.Where("fec.name ilike ? or description ilike ?", searchText, searchText)
+	}
+
+	err = query.Count(&totalRows).Error
+	if err != nil {
+		log.Println("Failed to count FinancialEventCategories", err.Error())
+		return []FinancialEventCategories{}, 0, err
+	}
+
+	err = query.Select("fec.*").Offset(filters.PageLimit*filters.CurrentPage - 1).
+		Limit(filters.PageLimit).Error
 	if err != nil {
 		log.Println("FinancialEventCategories getList func query error:", err.Error())
 		return []FinancialEventCategories{}, 0, err

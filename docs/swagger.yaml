@@ -1,0 +1,65 @@
+basePath: /api/v1
+definitions:
+  response.ResponseModel:
+    properties:
+      data: {}
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:8000
+info:
+  contact:
+    email: support@swagger.io
+    name: Isfandiyor Zabirov
+    url: http://www.swagger.io/support
+  description: Welcome to family budget API.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Family Budget API
+  version: "1.0"
+paths:
+  /api/v1/financial_event_categories:
+    post:
+      operationId: create-financial-event-category
+      parameters:
+      - description: Название категории
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Описание категории
+        in: body
+        name: description
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Создание катгории финансовых событии
+      tags:
+      - Категории финансовых событий
+securityDefinitions:
+  BearerAuth:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
