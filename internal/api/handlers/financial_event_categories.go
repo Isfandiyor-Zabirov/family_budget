@@ -21,7 +21,7 @@ import (
 // @Param description  			body string false "Описание категории"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
-// @Router /api/v1/financial_event_categories [post]
+// @Router /financial_event_categories [post]
 func CreateFinancialEventCategory(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
@@ -64,7 +64,7 @@ func CreateFinancialEventCategory(c *gin.Context) {
 // @Param description  			body string false "Описание категории"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
-// @Router /api/v1/financial_event_categories [put]
+// @Router /financial_event_categories [put]
 func UpdateFinancialEventCategory(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
@@ -109,7 +109,7 @@ func UpdateFinancialEventCategory(c *gin.Context) {
 // @Failure      400  {object}  response.ResponseModel "Неверный формат ID"
 // @Failure      404  {object}  response.ResponseModel "Категория не найдена"
 // @Failure      500  {object}  response.ResponseModel "Внутренняя ошибка сервера"
-// @Router       /api/v1/financial_event_categories/{id} [delete]
+// @Router       /financial_event_categories/{id} [delete]
 func DeleteFinancialEventCategory(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
@@ -171,7 +171,7 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 // @Failure      400  {object}  response.ResponseModel "Неверный формат ID"
 // @Failure      404  {object}  response.ResponseModel "Категория не найдена"
 // @Failure      500  {object}  response.ResponseModel "Внутренняя ошибка сервера"
-// @Router       /api/v1/financial_event_categories/{id} [get]
+// @Router       /financial_event_categories/{id} [get]
 func GetFinancialEventCategory(c *gin.Context) {
 	var err error
 	ctxData := getClaimsFromContext(c)
@@ -217,7 +217,7 @@ func GetFinancialEventCategory(c *gin.Context) {
 // @Success      200    {object}  response.PaginatedResponse
 // @Failure      400    {object}  response.ResponseModel "Неверные параметры запроса"
 // @Failure      500    {object}  response.ResponseModel "Внутренняя ошибка сервера"
-// @Router       /api/v1/financial_event_categories [get]
+// @Router       /financial_event_categories [get]
 func GetFinancialEventCategoryList(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
