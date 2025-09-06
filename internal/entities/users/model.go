@@ -55,3 +55,17 @@ type MeAccesses struct {
 	AccessName string `json:"access_name"`
 	Active     bool   `json:"active"`
 }
+
+type RegistrationData struct {
+	RoleID     int    `gorm:"column:role_id" json:"role_id"`
+	FamilyID   int    `gorm:"column:family_id" json:"family_id"`
+	Name       string `gorm:"column:name" binding:"required" json:"name"`
+	Surname    string `gorm:"column:surname" binding:"required" json:"surname"`
+	MiddleName string `gorm:"column:middle_name" json:"middle_name"`
+	Phone      string `gorm:"column:phone" binding:"required" json:"phone"`
+	Email      string `gorm:"column:email" json:"email"`
+	Login      string `gorm:"column:login" binding:"required" json:"login"`
+	Password   string `gorm:"column:password" binding:"required" json:"password"`
+	FamilyName string `gorm:"column:family_name" binding:"required" json:"family_name"`
+	HomePhone  string `gorm:"column:owner_phone" json:"home_phone"`
+}

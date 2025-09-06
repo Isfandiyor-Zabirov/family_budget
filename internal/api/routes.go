@@ -4,10 +4,13 @@ import (
 	"family_budget/internal/api/handlers"
 	"family_budget/internal/internal_config"
 	"family_budget/internal/logger"
+	"family_budget/middleware"
+	"family_budget/pkg/database"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/julienschmidt/httprouter"
@@ -16,6 +19,19 @@ import (
 )
 
 func Init() {
+
+	jwtMiddleware := &middleware.GinJWTMiddleware{
+		Realm:          internal_config.InternalConfigs.Server.Realm,
+		AccessKey:      []byte(internal_config.InternalConfigs.Application.AccessKey),
+		RefreshKey:     []byte(internal_config.InternalConfigs.Application.RefreshKey),
+		AccessTimeout:  time.Second * time.Duration(internal_config.InternalConfigs.Application.AccessTknTimeout),
+		RefreshTimeout: time.Second * time.Duration(internal_config.InternalConfigs.Application.RefreshTknTimeout),
+		MaxRefresh:     time.Hour * 24,
+		Authenticator:  middleware.Authenticator,
+		PayloadFunc:    middleware.Payload,
+		DB:             database.Postgres(),
+	}
+
 	router := gin.Default()
 
 	customLogger := logger.GetLogger()
@@ -28,19 +44,24 @@ func Init() {
 
 	router.Use(gin.Recovery())
 
+	router.POST("api/v1/register", handlers.Register)
+	router.POST("api/v1/login", jwtMiddleware.LoginHandler)
+	router.GET("api/v1/refresh", jwtMiddleware.RefreshToken)
+
+	v1 := router.Group("api/v1")
+	v1.Use(jwtMiddleware.MiddlewareFunc())
+
+	v1.GET("/get_me", handlers.GetMe)
+
+	//////////////////////////////// Категории финансовых событий \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	financialEventCategories := v1.Group("financial_event_categories")
+	financialEventCategories.POST("", handlers.CreateFinancialEventCategory)
+
 	accounts := gin.Accounts{
 		"sakhi":  "family_budget",
 		"eraj":   "family_budget",
 		"ismoil": "family_budget",
 	}
-
-	v1 := router.Group("api/v1")
-
-	// TODO: add middleware to v1
-
-	//////////////////////////////// Категории финансовых событий \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	financialEventCategories := v1.Group("financial_event_categories")
-	financialEventCategories.POST("", handlers.CreateFinancialEventCategory)
 
 	router.GET("/swagger/*any", gin.BasicAuth(accounts), ginSwagger.WrapHandler(swaggerFiles.Handler))
 

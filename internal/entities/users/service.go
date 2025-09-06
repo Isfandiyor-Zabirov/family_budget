@@ -3,7 +3,6 @@ package users
 import (
 	"errors"
 	"family_budget/internal/utils/response"
-	"family_budget/pkg/database"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -19,6 +18,27 @@ func GetMe(userID int) (resp response.ResponseModel, err error) {
 
 	resp = response.SetResponseData(me, "Успех", true)
 	return
+}
+
+func Register(data *RegistrationData) error {
+	return register(data)
+}
+
+func UpdatePassword(oldPassword, newPassword string, userID int) error {
+	existingUser, err := getUser(userID)
+	if err != nil {
+		return err
+	}
+
+	if existingUser.ID == 0 {
+		return errors.New("Пользователь не найден ")
+	}
+
+	if !checkPassword(existingUser.Password, oldPassword) {
+		return errors.New("Неверный пароль ")
+	}
+
+	return updatePassword(hashPassword(newPassword), userID)
 }
 
 func hashPassword(password string) string {
@@ -68,13 +88,4 @@ func checkLogin(login string) (string, error) {
 	}
 
 	return login, nil
-}
-
-func loginExists(login string) bool {
-	count := 0
-	_ = database.Postgres().Raw("SELECT count(*) from users where login = ?", login).Scan(&count).Error
-	if count > 0 {
-		return true
-	}
-	return false
 }
