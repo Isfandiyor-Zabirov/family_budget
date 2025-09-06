@@ -33,3 +33,13 @@ type Goals struct {
 func (*Goals) TableName() string {
 	return "goals"
 }
+
+type Filters struct {
+	FamilyID    int     `form:"family_id"` // for internal use only
+	Search      *string `form:"search"`
+	Status      *string `form:"status"`
+	DueDateFrom *string `form:"due_date_from"` // YYYY-MM-DD
+	DueDateTo   *string `form:"due_date_to"`   // YYYY-MM-DD
+	CurrentPage int     `form:"current_page"`
+	PageLimit   int     `form:"page_limit"`
+}

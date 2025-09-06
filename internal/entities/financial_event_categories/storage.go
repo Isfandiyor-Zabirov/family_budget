@@ -55,8 +55,8 @@ func getList(filters Filters) (resp []FinancialEventCategories, totalRows int64,
 		return []FinancialEventCategories{}, 0, err
 	}
 
-	err = query.Select("fec.*").Offset(filters.PageLimit*filters.CurrentPage - 1).
-		Limit(filters.PageLimit).Error
+	err = query.Select("fec.*").Offset(filters.PageLimit * (filters.CurrentPage - 1)).
+		Limit(filters.PageLimit).Order("fec.id desc").Scan(&resp).Error
 	if err != nil {
 		log.Println("FinancialEventCategories getList func query error:", err.Error())
 		return []FinancialEventCategories{}, 0, err
