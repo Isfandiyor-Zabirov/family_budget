@@ -56,7 +56,7 @@ func CreateFinancialEventCategory(c *gin.Context) {
 
 // UpdateFinancialEventCategory - Изменение категории финансовых событии
 // @Summary Изменение категории финансовых событии
-// @ID create-financial-event-category
+// @ID update-financial-event-category
 // @Tags Категории финансовых событий
 // @Produce json
 // @Security     JWT
@@ -64,7 +64,7 @@ func CreateFinancialEventCategory(c *gin.Context) {
 // @Param description  			body string false "Описание категории"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
-// @Router /api/v1/financial_event_categories [post]
+// @Router /api/v1/financial_event_categories [put]
 func UpdateFinancialEventCategory(c *gin.Context) {
 	var (
 		ctxData = getClaimsFromContext(c)
@@ -162,7 +162,7 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 // GetFinancialEventCategory - Получении категории финансовых событий
 // @Summary      Получения категории финансовых событий
 // @Description  Получения категории по её ID
-// @ID           delete-financial-event-category
+// @ID           get-financial-event-category
 // @Tags         Категории финансовых событий
 // @Produce      json
 // @Security     JWT

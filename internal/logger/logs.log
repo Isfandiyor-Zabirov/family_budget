@@ -119,3 +119,64 @@ Key: 'RegistrationData.FamilyName' Error:Field validation for 'FamilyName' faile
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on :8000
+2025/09/06 16:27:21 Logging to file: internal/logger/logs.log
+2025/09/06 16:27:21 externalConfigs: {{localhost postgres 5432 family_budget postgres disable}}
+2025/09/06 16:27:21 Database successfully connected! 
+2025/09/06 16:27:21 Error on adding default values:  [ERROR: duplicate key value violates unique constraint "families_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "roles_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "accesses_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "access_groups_pkey" (SQLSTATE 23505)]
+[GIN-debug] POST   /api/v1/register          --> family_budget/internal/api/handlers.Register (6 handlers)
+[GIN-debug] POST   /api/v1/login             --> family_budget/middleware.(*GinJWTMiddleware).LoginHandler-fm (6 handlers)
+[GIN-debug] GET    /api/v1/refresh           --> family_budget/middleware.(*GinJWTMiddleware).RefreshToken-fm (6 handlers)
+[GIN-debug] GET    /api/v1/get_me            --> family_budget/internal/api/handlers.GetMe (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.GetFinancialEventCategoryList (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.GetFinancialEventCategory (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.UpdateFinancialEventCategory (7 handlers)
+[GIN-debug] DELETE /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.DeleteFinancialEventCategory (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories --> family_budget/internal/api/handlers.UpdateFinancialEventCategory (7 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (7 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8000
+2025/09/06 16:30:06 Logging to file: internal/logger/logs.log
+2025/09/06 16:30:06 externalConfigs: {{localhost postgres 5432 family_budget postgres disable}}
+2025/09/06 16:30:07 Database successfully connected! 
+2025/09/06 16:30:07 Error on adding default values:  [ERROR: duplicate key value violates unique constraint "families_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "roles_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "accesses_pkey" (SQLSTATE 23505) ERROR: duplicate key value violates unique constraint "access_groups_pkey" (SQLSTATE 23505)]
+[GIN-debug] POST   /api/v1/register          --> family_budget/internal/api/handlers.Register (6 handlers)
+[GIN-debug] POST   /api/v1/login             --> family_budget/middleware.(*GinJWTMiddleware).LoginHandler-fm (6 handlers)
+[GIN-debug] GET    /api/v1/refresh           --> family_budget/middleware.(*GinJWTMiddleware).RefreshToken-fm (6 handlers)
+[GIN-debug] GET    /api/v1/get_me            --> family_budget/internal/api/handlers.GetMe (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.GetFinancialEventCategoryList (7 handlers)
+[GIN-debug] GET    /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.GetFinancialEventCategory (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories/financial-categories --> family_budget/internal/api/handlers.UpdateFinancialEventCategory (7 handlers)
+[GIN-debug] DELETE /api/v1/financial_event_categories/financial-categories/{id} --> family_budget/internal/api/handlers.DeleteFinancialEventCategory (7 handlers)
+[GIN-debug] POST   /api/v1/financial_event_categories --> family_budget/internal/api/handlers.CreateFinancialEventCategory (7 handlers)
+[GIN-debug] PUT    /api/v1/financial_event_categories --> family_budget/internal/api/handlers.UpdateFinancialEventCategory (7 handlers)
+[GIN-debug] GET    /swagger/*any             --> github.com/swaggo/gin-swagger.CustomWrapHandler.func1 (7 handlers)
+[GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
+Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
+[GIN-debug] Listening and serving HTTP on :8000
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/index.html HTTP/1.1 200 516.5µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/swagger-ui.css HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/index.css HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/swagger-initializer.js HTTP/1.1 200 1.0036ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/swagger-ui-bundle.js HTTP/1.1 200 2.5895ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/swagger-ui-standalone-preset.js HTTP/1.1 200 553.5µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/doc.json HTTP/1.1 200 505.9µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] ::1 - [Sat, 06 Sep 2025 16:30:10 +05] "GET /swagger/favicon-32x32.png HTTP/1.1 200 992.6µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN-debug] redirecting request 301: /swagger/ --> /swagger/
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:19 +05] "GET /swagger/ HTTP/1.1 401 72.3µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:37 +05] "GET /swagger/ HTTP/1.1 404 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:37 +05] "GET /favicon.ico HTTP/1.1 404 379.6µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:45 +05] "GET /swagger/index.html HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:45 +05] "GET /swagger/index.css HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:45 +05] "GET /swagger/swagger-initializer.js HTTP/1.1 200 89.9µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:45 +05] "GET /swagger/swagger-ui.css HTTP/1.1 200 210.6805ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-initializer.js HTTP/1.1 200 0s "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-ui-standalone-preset.js HTTP/1.1 200 539.3141ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-ui-bundle.js HTTP/1.1 200 756.3539ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-ui-standalone-preset.js HTTP/1.1 200 208.0727ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/swagger-ui-bundle.js HTTP/1.1 200 201.4632ms "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/doc.json HTTP/1.1 200 77.2µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  
+[GIN] 10.192.9.127 - [Sat, 06 Sep 2025 16:34:46 +05] "GET /swagger/favicon-32x32.png HTTP/1.1 200 75.8µs "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"  

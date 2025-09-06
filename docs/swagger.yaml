@@ -139,6 +139,36 @@ paths:
             $ref: '#/definitions/response.ResponseModel'
       security:
       - JWT: []
+      summary: Создание категории финансовых событии
+      tags:
+      - Категории финансовых событий
+    put:
+      operationId: update-financial-event-category
+      parameters:
+      - description: Название категории
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Описание категории
+        in: body
+        name: description
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
       summary: Изменение категории финансовых событии
       tags:
       - Категории финансовых событий
@@ -178,7 +208,7 @@ paths:
       - Категории финансовых событий
     get:
       description: Получения категории по её ID
-      operationId: delete-financial-event-category
+      operationId: get-financial-event-category
       parameters:
       - description: ID категории для получения
         in: path

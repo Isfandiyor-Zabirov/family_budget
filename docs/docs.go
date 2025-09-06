@@ -83,7 +83,7 @@ const docTemplate = `{
                     }
                 }
             },
-            "post": {
+            "put": {
                 "security": [
                     {
                         "JWT": []
@@ -96,6 +96,54 @@ const docTemplate = `{
                     "Категории финансовых событий"
                 ],
                 "summary": "Изменение категории финансовых событии",
+                "operationId": "update-financial-event-category",
+                "parameters": [
+                    {
+                        "description": "Название категории",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Описание категории",
+                        "name": "description",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ResponseModel"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Категории финансовых событий"
+                ],
+                "summary": "Создание категории финансовых событии",
                 "operationId": "create-financial-event-category",
                 "parameters": [
                     {
@@ -147,7 +195,7 @@ const docTemplate = `{
                     "Категории финансовых событий"
                 ],
                 "summary": "Получения категории финансовых событий",
-                "operationId": "delete-financial-event-category",
+                "operationId": "get-financial-event-category",
                 "parameters": [
                     {
                         "type": "integer",
