@@ -3,10 +3,10 @@ package migration
 import (
 	"family_budget/internal/entities/family"
 	"family_budget/internal/entities/roles"
+	"family_budget/internal/entities/users"
 	"family_budget/pkg/database"
 	"fmt"
 	"log"
-	"os/user"
 )
 
 func AutoMigrate() {
@@ -15,7 +15,7 @@ func AutoMigrate() {
 	err := database.Postgres().AutoMigrate(
 		&family.Family{},
 		&roles.Roles{},
-		&user.User{},
+		&users.User{},
 	)
 	if err != nil {
 		log.Println("AutoMigrate func error: ", err.Error())

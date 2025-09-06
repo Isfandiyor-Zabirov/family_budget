@@ -1,1 +1,80 @@
 package users
+
+import (
+	"errors"
+	"family_budget/internal/utils/response"
+	"family_budget/pkg/database"
+	"fmt"
+	"golang.org/x/crypto/bcrypt"
+	"log"
+	"strings"
+)
+
+func GetMe(userID int) (resp response.ResponseModel, err error) {
+	me, err := getMe(userID)
+	if err != nil {
+		resp = response.SetResponseData(Me{}, "Что-то пошло не так", false)
+		return
+	}
+
+	resp = response.SetResponseData(me, "Успех", true)
+	return
+}
+
+func hashPassword(password string) string {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	if err != nil {
+		return ""
+	}
+	password = string(bytes)
+	return password
+}
+
+// checkPassword - создает хэш
+func checkPassword(provided, existing string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(provided), []byte(existing))
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func validateString(str string, min, max int) error {
+	symbols := []rune(str)
+
+	if len(symbols) < min || len(symbols) > max {
+		return errors.New(fmt.Sprintf("Длина должна быть между %v и %v", min, max))
+	}
+
+	for _, val := range symbols {
+		if (val >= 'а' && val <= 'я') || (val >= 'А' && val <= 'Я') {
+			return errors.New(fmt.Sprintf("Логин содержит кирилицу!"))
+		}
+	}
+
+	return nil
+}
+
+func checkLogin(login string) (string, error) {
+	log.Println("login: ", login)
+	login = strings.TrimSpace(login)
+	login = strings.ToLower(login)
+	err := validateString(login, 4, 30)
+	if err != nil {
+		return "", err
+	}
+	if loginExists(login) {
+		return "", errors.New("Логин занят, введите другой логин!")
+	}
+
+	return login, nil
+}
+
+func loginExists(login string) bool {
+	count := 0
+	_ = database.Postgres().Raw("SELECT count(*) from users where login = ?", login).Scan(&count).Error
+	if count > 0 {
+		return true
+	}
+	return false
+}
