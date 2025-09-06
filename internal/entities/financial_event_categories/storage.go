@@ -7,19 +7,27 @@ import (
 )
 
 func createFec(fec *FinancialEventCategories) (FinancialEventCategories, error) {
-	return crud.NewRepository[FinancialEventCategories]().Create(database.Postgres(), fec)
+	repo := crud.NewRepository[FinancialEventCategories]()
+	db := database.Postgres()
+	return repo.Create(db, fec)
 }
 
 func updateFec(fec *FinancialEventCategories) (FinancialEventCategories, error) {
-	return crud.NewRepository[FinancialEventCategories]().Update(database.Postgres(), fec)
+	repo := crud.NewRepository[FinancialEventCategories]()
+	db := database.Postgres()
+	return repo.Update(db, fec)
 }
 
 func deleteFec(fec *FinancialEventCategories) error {
-	return crud.NewRepository[FinancialEventCategories]().Delete(database.Postgres(), fec)
+	repo := crud.NewRepository[FinancialEventCategories]()
+	db := database.Postgres()
+	return repo.Delete(db, fec)
 }
 
 func getFec(id int) (FinancialEventCategories, error) {
-	return crud.NewRepository[FinancialEventCategories]().Get(database.Postgres(), id)
+	repo := crud.NewRepository[FinancialEventCategories]()
+	db := database.Postgres()
+	return repo.Get(db, id)
 }
 
 func getList(filters Filters) (resp []FinancialEventCategories, totalRows int64, err error) {
