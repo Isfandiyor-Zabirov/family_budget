@@ -44,11 +44,11 @@ func getGoals(filters Filters) (resp []Goals, totalRows int64, err error) {
 	}
 
 	if filters.DueDateFrom != nil {
-		query = query.Where("g.due_date_from::date => ?", filters.DueDateFrom)
+		query = query.Where("g.due_date::date >= ?", filters.DueDateFrom)
 	}
 
 	if filters.DueDateTo != nil {
-		query = query.Where("g.due_date_to::date <= ?", filters.DueDateTo)
+		query = query.Where("g.due_date::date <= ?", filters.DueDateTo)
 	}
 
 	err = query.Count(&totalRows).Error
@@ -57,9 +57,8 @@ func getGoals(filters Filters) (resp []Goals, totalRows int64, err error) {
 		return []Goals{}, 0, err
 	}
 
-	if filters.CurrentPage != 0 {
-		page := 1
-		filters.CurrentPage = page
+	if filters.CurrentPage == 0 {
+		filters.CurrentPage = 1
 	}
 
 	if filters.PageLimit == 0 {

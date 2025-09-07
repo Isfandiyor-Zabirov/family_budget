@@ -231,33 +231,9 @@ func GetFinancialEventCategoryList(c *gin.Context) {
 		return
 	}
 
-	pageStr := c.DefaultQuery("page", "1")
-	limitStr := c.DefaultQuery("limit", "10")
+	c.Bind(&filters)
 
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		response.SetResponseData(resp, nil, "Неверный формат номера страницы", false, 0, 0, 0)
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 {
-		response.SetResponseData(resp, nil, "Неверный формат лимита на страницу", false, 0, 0, 0)
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	filters.CurrentPage = page
-	filters.PageLimit = limit
-	filters.FamilyID = ctxData.FamilyID
-
-	searchStr := c.Query("search")
-	if searchStr != "" {
-		filters.Search = &searchStr
-	}
-
-	resp, err = financial_event_categories.GetList(filters)
+	resp, err := financial_event_categories.GetList(filters)
 	if err != nil {
 		log.Printf("GetFinancialEventCategoryList handler error: %v", err)
 		c.JSON(http.StatusInternalServerError, resp)
