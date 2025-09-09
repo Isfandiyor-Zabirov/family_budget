@@ -1,1 +1,3 @@
-files/logger
+.log
+.idea
+.vscode

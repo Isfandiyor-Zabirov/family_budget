@@ -1,14 +1,14 @@
 package handlers
 
 import (
-	"family_budget/internal/entities/family"
 	"family_budget/internal/entities/financial_event_categories"
 	"family_budget/internal/utils/response"
 	"family_budget/middleware"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 // CreateFinancialEventCategory - Создание категории финансовых событии
@@ -17,8 +17,7 @@ import (
 // @Tags Категории финансовых событий
 // @Produce json
 // @Security     JWT
-// @Param name  		 		body string true "Название категории"
-// @Param description  			body string false "Описание категории"
+// @Param   category  body      financial_event_categories.FinancialEventCategories  true  "Данные для создания категории"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
 // @Router /financial_event_categories [post]
@@ -31,14 +30,14 @@ func CreateFinancialEventCategory(c *gin.Context) {
 	)
 
 	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.CREATE, ctxData.UserID) {
-		response.SetResponseData(resp, request, "Доступ запрещен", false, 0, 0, 0)
+		response.SetResponseData(&resp, request, "Доступ запрещен", false, 0, 0, 0)
 		c.JSON(http.StatusForbidden, resp)
 		return
 	}
 
 	if err = c.ShouldBindJSON(&request); err != nil {
 		log.Println("CreateFinancialEventCategory handler cannot bind the request")
-		response.SetResponseData(resp, request, "Неверная структура запроса", false, 0, 0, 0)
+		response.SetResponseData(&resp, request, "Неверная структура запроса", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
@@ -60,8 +59,7 @@ func CreateFinancialEventCategory(c *gin.Context) {
 // @Tags Категории финансовых событий
 // @Produce json
 // @Security     JWT
-// @Param name  		 		body string true "Название категории"
-// @Param description  			body string false "Описание категории"
+// @Param   category  body      financial_event_categories.FinancialEventCategories  true  "Данные для обновлении категории"
 // @Success 200 {object} response.ResponseModel
 // @Failure 400 {object} response.ResponseModel
 // @Router /financial_event_categories [put]
@@ -74,7 +72,7 @@ func UpdateFinancialEventCategory(c *gin.Context) {
 	)
 
 	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
-		response.SetResponseData(resp, request, "Доступ запрещен", false, 0, 0, 0)
+		response.SetResponseData(&resp, request, "Доступ запрещен", false, 0, 0, 0)
 		c.JSON(http.StatusForbidden, resp)
 		return
 	}
@@ -88,13 +86,13 @@ func UpdateFinancialEventCategory(c *gin.Context) {
 
 	request.FamilyID = ctxData.FamilyID
 
-	resp, err = financial_event_categories.Create(&request)
+	resp, err = financial_event_categories.Update(&request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // DeleteFinancialEventCategory - Удаление категории финансовых событий
@@ -118,39 +116,19 @@ func DeleteFinancialEventCategory(c *gin.Context) {
 	)
 
 	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.DELETE, ctxData.UserID) {
-		response.SetResponseData(resp, nil, "Доступ запрещен", false, 0, 0, 0)
+		response.SetResponseData(&resp, nil, "Доступ запрещен", false, 0, 0, 0)
 		c.JSON(http.StatusForbidden, resp)
 		return
 	}
 
-	idStr := c.Param("id")
-	id, err := strconv.Atoi(idStr)
+	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
 		response.SetResponseData(&resp, nil, "Неверный формат ID", false, 0, 0, 0)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
-	_, err = financial_event_categories.Get(id)
-	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler fec id not found: %d", id)
-		response.SetResponseData(&resp, nil, "ID финансовой категории не найдена", false, 0, 0, 0)
-		c.JSON(http.StatusNotFound, resp)
-		return
-	}
-
-	familyID := ctxData.FamilyID
-
-	_, err = family.Get(familyID)
-	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler family id not found: %d", familyID)
-		response.SetResponseData(&resp, nil, "ID семьи не найдена", false, 0, 0, 0)
-		c.JSON(http.StatusNotFound, resp)
-		return
-	}
-
-	resp, err = financial_event_categories.Delete(id, familyID)
+	resp, err = financial_event_categories.Delete(id, ctxData.FamilyID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, resp)
 		return
@@ -177,8 +155,16 @@ func GetFinancialEventCategory(c *gin.Context) {
 	ctxData := getClaimsFromContext(c)
 	var resp response.ResponseModel
 
-	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
-		response.SetResponseData(resp, nil, "Доступ запрещен", false, 0, 0, 0)
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.READ, ctxData.UserID) {
+		response.SetResponseData(
+			&resp,
+			financial_event_categories.FinancialEventCategories{},
+			"Доступ запрещен",
+			false,
+			0,
+			0,
+			0,
+		)
 		c.JSON(http.StatusForbidden, resp)
 		return
 	}
@@ -186,20 +172,25 @@ func GetFinancialEventCategory(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		log.Printf("DeleteFinancialEventCategory handler invalid ID format: %s", idStr)
-		response.SetResponseData(&resp, nil, "Неверный формат ID", false, 0, 0, 0)
+		log.Printf("GetFinancialEventCategory handler invalid ID format: %s", idStr)
+		response.SetResponseData(
+			&resp,
+			financial_event_categories.FinancialEventCategories{},
+			"Неверный формат ID",
+			false,
+			0,
+			0,
+			0,
+		)
 		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
 
-	fec, err := financial_event_categories.Get(id)
+	resp, err = financial_event_categories.Get(id, ctxData.FamilyID)
 	if err != nil {
-		response.SetResponseData(&resp, nil, "Финансовая категория не найдена", false, 0, 0, 0)
-		c.JSON(http.StatusNotFound, resp)
+		c.JSON(http.StatusBadRequest, resp)
 		return
 	}
-
-	resp.Data = fec
 
 	c.JSON(http.StatusOK, resp)
 }
@@ -210,11 +201,11 @@ func GetFinancialEventCategory(c *gin.Context) {
 // @ID           get-financial-event-category-list
 // @Tags         Категории финансовых событий
 // @Produce      json
-// @Security     JWT
+// @Security     BearerAuth
 // @Param        page   query     int    false  "Номер страницы" default(1)
 // @Param        limit  query     int    false  "Количество элементов на странице" default(10)
 // @Param        search query     string false  "Текст для поиска по названию и описанию"
-// @Success      200    {object}  response.PaginatedResponse
+// @Success      200    {object}  response.ResponseModel
 // @Failure      400    {object}  response.ResponseModel "Неверные параметры запроса"
 // @Failure      500    {object}  response.ResponseModel "Внутренняя ошибка сервера"
 // @Router       /financial_event_categories [get]
@@ -225,37 +216,37 @@ func GetFinancialEventCategoryList(c *gin.Context) {
 		resp    response.ResponseModel
 	)
 
-	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.UPDATE, ctxData.UserID) {
-		response.SetResponseData(&resp, nil, "Доступ запрещен", false, 0, 0, 0)
+	if !middleware.CheckAccess(middleware.FinancialEventCategories, middleware.READ, ctxData.UserID) {
+		response.SetResponseData(
+			&resp,
+			[]financial_event_categories.FinancialEventCategories{},
+			"Доступ запрещен",
+			false,
+			0,
+			0,
+			0,
+		)
 		c.JSON(http.StatusForbidden, resp)
 		return
 	}
 
-	pageStr := c.DefaultQuery("page", "1")
-	limitStr := c.DefaultQuery("limit", "10")
-
-	page, err := strconv.Atoi(pageStr)
-	if err != nil || page < 1 {
-		response.SetResponseData(resp, nil, "Неверный формат номера страницы", false, 0, 0, 0)
-		c.JSON(http.StatusBadRequest, resp)
+	err := c.Bind(&filters)
+	if err != nil {
+		log.Println("GetFinancialEventCategoryList handler cannot get params:", err.Error())
+		response.SetResponseData(
+			&resp,
+			[]financial_event_categories.FinancialEventCategories{},
+			"Что-то пошло не так",
+			false,
+			0,
+			0,
+			0,
+		)
+		c.JSON(http.StatusInternalServerError, resp)
 		return
 	}
 
-	limit, err := strconv.Atoi(limitStr)
-	if err != nil || limit < 1 {
-		response.SetResponseData(resp, nil, "Неверный формат лимита на страницу", false, 0, 0, 0)
-		c.JSON(http.StatusBadRequest, resp)
-		return
-	}
-
-	filters.CurrentPage = page
-	filters.PageLimit = limit
 	filters.FamilyID = ctxData.FamilyID
-
-	searchStr := c.Query("search")
-	if searchStr != "" {
-		filters.Search = &searchStr
-	}
 
 	resp, err = financial_event_categories.GetList(filters)
 	if err != nil {

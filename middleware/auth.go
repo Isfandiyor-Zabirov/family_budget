@@ -53,7 +53,7 @@ type GinJWTMiddleware struct {
 	// Callback function that should perform the authentication of the user based on userID and
 	// password. Must return true on success, false on failure. Required.
 	// Option return user id, if so, user id will be stored in Claim Array.
-	Authenticator func(login string, password string, c *gin.Context, ipadress, otp string) (string, bool)
+	Authenticator func(login string, password string) (string, bool)
 
 	// Callback function that should perform the authorization of the authenticated user. Called
 	// only after an authentication success. Must return true on success, false on failure.
@@ -243,7 +243,7 @@ func (mw *GinJWTMiddleware) sendCaptcha(c *gin.Context, userCache *attempt) {
 // @Failure 400 {string} string "reason"
 // @Failure 401 {string} string "reason"
 // @Failure 402 {string} string "reason"
-// @Router /visor/login [post]
+// @Router /login [post]
 func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	_ = mw.MiddlewareInit()
 	var loginVals Login
@@ -273,7 +273,7 @@ func (mw *GinJWTMiddleware) LoginHandler(c *gin.Context) {
 	log.Println("clientIP:", ipAddress)
 	log.Println("Header:", c.Request.Header)
 
-	userID, ok := mw.Authenticator(loginVals.Login, loginVals.Password, c, ipAddress, loginVals.Otp)
+	userID, ok := mw.Authenticator(loginVals.Login, loginVals.Password)
 
 	if !ok {
 		mw.unauthorized(c, http.StatusForbidden, "Неверный логин или пароль")
@@ -353,7 +353,7 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 
 	if err != nil {
 		pretty.Logln("error: signing algorithm")
-		c.JSON(http.StatusForbidden, err.Error())
+		c.JSON(http.StatusUnauthorized, err.Error())
 		return
 	}
 
@@ -365,7 +365,7 @@ func (mw *GinJWTMiddleware) RefreshToken(c *gin.Context) {
 
 	if expire < mw.TimeFunc().Unix() {
 		pretty.Logln("error: expired token")
-		fmt.Println("token is expired1")
+		fmt.Println("token is expired")
 		mw.unauthorized(c, http.StatusForbidden, "token is expired")
 		return
 	}
@@ -566,10 +566,10 @@ func (mw *GinJWTMiddleware) unauthorized(c *gin.Context, code int, message strin
 	return
 }
 
-func Authenticator(login string, password string, c *gin.Context, ipadress string, otp string) (string, bool) {
+func Authenticator(login string, password string) (string, bool) {
 	var user users.User
 
-	if err := database.Postgres().Where("login = ? and active = true", login).Find(&user).Limit(1).Error; err != nil {
+	if err := database.Postgres().Where("login = ?", login).Find(&user).Limit(1).Error; err != nil {
 		log.Println("Authenticator func query error:", err.Error())
 		return "", false
 	}
@@ -597,8 +597,8 @@ func Payload(login string) map[string]interface{} {
 	if err := database.Postgres().Where("login = ? ", login).Find(&user); err.Error != nil {
 		return map[string]interface{}{
 			"user_id":   0,
-			"role":      "",
-			"user_name": "",
+			"role_id":   0,
+			"family_id": 0,
 		}
 	}
 

@@ -23,3 +23,22 @@ type Transactions struct {
 func (*Transactions) TableName() string {
 	return "transactions"
 }
+
+type Filters struct {
+	FamilyID         int     // for internal use only
+	Search           *string `form:"search"`
+	UserID           *int    `form:"user_id"`
+	FinancialEventID *int    `form:"financial_event_id"`
+	GoalID           *int    `form:"goal_id"`
+	DateFrom         *string `form:"date_from"`
+	DateTo           *string `form:"date_to"`
+	CurrentPage      int     `form:"current_page"`
+	PageLimit        int     `form:"page_limit"`
+}
+
+type Response struct {
+	Transactions
+	UserName           string `json:"user_name"`
+	FinancialEventName string `json:"financial_event_name"`
+	GoalName           string `json:"goal_name"`
+}

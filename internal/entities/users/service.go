@@ -9,6 +9,10 @@ import (
 	"strings"
 )
 
+func GetUserInternal(id int) (User, error) {
+	return getUser(id)
+}
+
 func CreateUser(user *User) (resp response.ResponseModel, err error) {
 	created, err := createUser(user)
 	if err != nil {
@@ -21,6 +25,15 @@ func CreateUser(user *User) (resp response.ResponseModel, err error) {
 }
 
 func UpdateUser(user *User) (resp response.ResponseModel, err error) {
+	userDb, err := getUser(user.ID)
+	if err != nil {
+		response.SetResponseData(&resp, User{}, "Пользователь не найден", false, 0, 0, 0)
+	}
+
+	if userDb.RoleID == 1 {
+		user.RoleID = 1
+	}
+
 	updated, err := updateUser(user)
 	if err != nil {
 		response.SetResponseData(&resp, User{}, "Что-то пошло не так", false, 0, 0, 0)
@@ -55,7 +68,7 @@ func DeleteUser(id, familyID int) (resp response.ResponseModel, err error) {
 	return
 }
 
-func GetUserList(filters Filters) (resp response.ResponseModel, pagination response.Pagination, err error) {
+func GetUserList(filters Filters) (resp response.ResponseModel, err error) {
 	list, total, err := getList(filters)
 	if err != nil {
 		response.SetResponseData(&resp, []UserResp{}, "Что-то пошло не так", false, 0, 0, 0)

@@ -1,7 +1,9 @@
 package role_accesses
 
 import (
+	"errors"
 	"family_budget/pkg/database"
+	"gorm.io/gorm"
 	"log"
 )
 
@@ -16,4 +18,12 @@ func checkAccess(accessGroup, access string, userID int) bool {
 		return false
 	}
 	return active
+}
+
+func createRoleWithAccesses(tx *gorm.DB, ras []RoleAccess) error {
+	if err := tx.Create(&ras).Error; err != nil {
+		log.Println("createRoleWithAccesses func create role accesses query error:", err.Error())
+		return errors.New("Ошибка сервера ")
+	}
+	return nil
 }

@@ -55,21 +55,54 @@ func Init() {
 	v1.GET("/get_me", handlers.GetMe)
 
 	//////////////////////////////// Категории финансовых событий \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	financialEventCategories := v1.Group("financial_event_categories")
-	financialEventCategories.POST("/financial-categories", handlers.CreateFinancialEventCategory)
-	financialEventCategories.GET("/financial-categories", handlers.GetFinancialEventCategoryList)
-	financialEventCategories.GET("/financial-categories/{id}", handlers.GetFinancialEventCategory)
-	financialEventCategories.PUT("/financial-categories", handlers.UpdateFinancialEventCategory)
-	financialEventCategories.DELETE("/financial-categories/{id}", handlers.DeleteFinancialEventCategory)
-
-	//////////////////////////////// Семья \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-	/*	family := v1.Group("financial_event_categories")
-		family.POST("/family", handlers.CreateFamily)
-		family.GET("/family/{id}", handlers.GetFamily)
-		family.PUT("/family", handlers.UpdateFamily)
-		family.DELETE("/family/{id}", handlers.DeleteFamily)*/
+	financialEventCategories := v1.Group("/financial_event_categories")
 	financialEventCategories.POST("", handlers.CreateFinancialEventCategory)
+	financialEventCategories.GET("", handlers.GetFinancialEventCategoryList)
+	financialEventCategories.GET("/:id", handlers.GetFinancialEventCategory)
 	financialEventCategories.PUT("", handlers.UpdateFinancialEventCategory)
+	financialEventCategories.DELETE("/:id", handlers.DeleteFinancialEventCategory)
+
+	//////////////////////////////// Роли и доступы \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	roles := v1.Group("/roles")
+	roles.GET("", handlers.GetRoles)
+	roles.GET("/:id", handlers.GetRole)
+	roles.DELETE("/:id", handlers.DeleteRole)
+	roles.GET("/accesses/:role_id", handlers.GetRoleWithAccesses)
+	roles.POST("", handlers.CreateRoleWithAccesses)
+	roles.PUT("", handlers.UpdateRoleWithAccesses)
+
+	//////////////////////////////// Семейство (Пользователи) \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	users := v1.Group("/users")
+	users.GET("", handlers.GetUserList)
+	users.POST("", handlers.CreateUser)
+	users.PUT("", handlers.UpdateUser)
+	users.DELETE("/:id", handlers.DeleteUser)
+
+	//////////////////////////////// Цели \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	goals := v1.Group("/goals")
+	goals.GET("", handlers.GetGoalsList)
+	goals.POST("", handlers.CreateGoal)
+	goals.GET("/:id", handlers.GetGoal)
+	goals.PUT("", handlers.UpdateGoal)
+	goals.DELETE("/:id", handlers.DeleteGoal)
+
+	//////////////////////////////// Операции \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	transactions := v1.Group("/transactions")
+	transactions.POST("", handlers.CreateTransaction)
+	transactions.GET("", handlers.GetTransactionList)
+
+	//////////////////////////////// Финансовые события \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	financialEvents := v1.Group("/financial_events")
+	financialEvents.GET("", handlers.GetFinancialEventList)
+	financialEvents.POST("", handlers.CreateFinancialEvent)
+	financialEvents.PUT("", handlers.UpdateFinancialEvent)
+	financialEvents.DELETE("/:id", handlers.DeleteFinancialEvent)
+	financialEvents.GET("/:id", handlers.GetFinancialEvent)
+
+	//////////////////////////////// Отчеты \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+	reports := v1.Group("/reports")
+	reports.GET("/main", handlers.GetMainReport)
+	reports.GET("/graph", handlers.GetGraphReport)
 
 	accounts := gin.Accounts{
 		"sakhi":  "family_budget",
@@ -90,13 +123,10 @@ func Init() {
 	}
 }
 
-func ping(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "pong"})
-}
-
 // CORSMiddleware controls course middleware
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		origin := c.Request.Header.Get("Origin")
 		if origin != "" {
 			c.Writer.Header().Set("Access-Control-Allow-Origin", origin)
@@ -114,4 +144,8 @@ func CORSMiddleware() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func ping(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "pong"})
 }

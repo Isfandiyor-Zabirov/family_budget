@@ -18,7 +18,35 @@ type RoleAccess struct {
 	CreatedAt     *time.Time                `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt     *time.Time                `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt     gorm.DeletedAt            `gorm:"index" json:"-"`
-	Role          roles.Roles               `gorm:"foreignKey:RoleID" json:"-"`
+	Role          roles.Role                `gorm:"foreignKey:RoleID" json:"-"`
 	Access        accesses.Access           `gorm:"foreignKey:AccessID" json:"-"`
 	AccessGroup   access_groups.AccessGroup `gorm:"foreignKey:AccessGroupID" json:"-"`
+}
+
+type GetRoleAccessFilter struct {
+	OwnerID     *int    `form:"owner_id"`
+	RoleID      *int    `form:"role_id"`
+	AccessID    *int    `form:"access_id"`
+	Name        *string `form:"name"`
+	Description *string `form:"description"`
+	Page        *int    `form:"page"`
+	PageLimit   *int    `form:"page_limit"`
+}
+
+type GetRoleAccessResp struct {
+	ID          int    `json:"id"`
+	Role        string `json:"role"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Active      bool   `json:"active"`
+}
+
+type CreateRoleWithAccessesReq struct {
+	Role     roles.Role                `json:"role"`
+	Accesses []AccessGroupWithAccesses `json:"accesses"`
+}
+
+type AccessGroupWithAccesses struct {
+	AccessGroupID int   `json:"access_group_id"`
+	AccessIDs     []int `json:"access_ids"`
 }

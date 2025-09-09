@@ -21,7 +21,7 @@ func calculateTotalPages(totalRows int64, pageLimit int) uint64 {
 	return uint64(math.Ceil(float64(totalRows) / float64(pageLimit)))
 }
 
-func SetResponseData(resp interface{}, data interface{}, message string, success bool, pageLimit int, totalRows int64, currentPage int) {
+func SetResponseData(resp *ResponseModel, data interface{}, message string, success bool, pageLimit int, totalRows int64, currentPage int) {
 	type dataStruct struct {
 		List       interface{} `json:"list"`
 		Pagination Pagination  `json:"pagination"`
@@ -38,7 +38,7 @@ func SetResponseData(resp interface{}, data interface{}, message string, success
 	}
 
 	// to avoid nil pointer dereference
-	resp = newRespModel
+	*resp = newRespModel
 }
 
 func setPagination(totalPages uint64, totalRows int64, currentPage int) Pagination {
@@ -47,11 +47,4 @@ func setPagination(totalPages uint64, totalRows int64, currentPage int) Paginati
 		TotalPages:  totalPages,
 		CurrentPage: uint64(currentPage),
 	}
-}
-
-type PaginatedResponse struct {
-	Success    bool        `json:"success"`
-	Message    string      `json:"message"`
-	Data       interface{} `json:"data"`
-	Pagination Pagination  `json:"pagination"`
 }

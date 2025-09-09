@@ -31,12 +31,13 @@ func getGoal(id int) (Goals, error) {
 }
 
 func getGoals(filters Filters) (resp []Goals, totalRows int64, err error) {
+	resp = []Goals{}
 	query := database.Postgres().Table("goals g").
 		Where("g.deleted_at IS NULL and g.family_id = ?", filters.FamilyID)
 
 	if filters.Search != nil {
 		search := "%" + *filters.Search + "%"
-		query = query.Where("g.name ilike ? or g.description ilike", search, search)
+		query = query.Where("g.name ilike ? or g.description ilike ?", search, search)
 	}
 
 	if filters.Status != nil {
@@ -44,11 +45,11 @@ func getGoals(filters Filters) (resp []Goals, totalRows int64, err error) {
 	}
 
 	if filters.DueDateFrom != nil {
-		query = query.Where("g.due_date_from::date => ?", filters.DueDateFrom)
+		query = query.Where("g.due_date::date >= ?", filters.DueDateFrom)
 	}
 
 	if filters.DueDateTo != nil {
-		query = query.Where("g.due_date_to::date <= ?", filters.DueDateTo)
+		query = query.Where("g.due_date::date <= ?", filters.DueDateTo)
 	}
 
 	err = query.Count(&totalRows).Error
@@ -57,9 +58,8 @@ func getGoals(filters Filters) (resp []Goals, totalRows int64, err error) {
 		return []Goals{}, 0, err
 	}
 
-	if filters.CurrentPage != 0 {
-		page := 1
-		filters.CurrentPage = page
+	if filters.CurrentPage == 0 {
+		filters.CurrentPage = 1
 	}
 
 	if filters.PageLimit == 0 {

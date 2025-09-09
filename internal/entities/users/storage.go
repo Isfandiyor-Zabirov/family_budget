@@ -22,7 +22,7 @@ func createUser(user *User) (User, error) {
 func updateUser(user *User) (User, error) {
 	repo := crud.NewRepository[User]()
 	db := database.Postgres()
-	return repo.Update(db, user, "Password", "Login")
+	return repo.Update(db, user, "Password", "Login", "Limit", "RemainingLimit")
 }
 
 func deleteUser(user *User) error {
@@ -52,14 +52,12 @@ func getList(filters Filters) (resp []UserResp, totalRows int64, err error) {
 		query = query.Where("u.role_id = ?", *filters.RoleID)
 	}
 
-	if filters.CurrentPage != 0 {
-		page := 1
-		filters.CurrentPage = page
+	if filters.CurrentPage == 0 {
+		filters.CurrentPage = 1
 	}
 
 	if filters.PageLimit == 0 {
-		pageLimit := 20
-		filters.PageLimit = pageLimit
+		filters.PageLimit = 20
 	}
 
 	err = query.Count(&totalRows).Error
@@ -68,11 +66,10 @@ func getList(filters Filters) (resp []UserResp, totalRows int64, err error) {
 		return []UserResp{}, 0, err
 	}
 
-	selectQuery := `u.id, u.name, u.surname, u.middle_name, u.phone, u.email, u.login, 
-			to_char(u.created_at, 'DD.MM.YYYY') as created_at_text, r.name as role`
+	selectQuery := `u.created_at, u.id, u.name, u.surname, u.middle_name, u.phone, u.email, u.login, r.name as role`
 
 	err = query.Select(selectQuery).Offset(filters.PageLimit * (filters.CurrentPage - 1)).
-		Limit(filters.PageLimit).Order("fec.id desc").Scan(&resp).Error
+		Limit(filters.PageLimit).Order("u.id desc").Scan(&resp).Error
 	if err != nil {
 		log.Println("User getList func query error:", err.Error())
 		return []UserResp{}, 0, err
@@ -179,7 +176,7 @@ func register(d *RegistrationData) (err error) {
 		return err
 	}
 
-	ras := role_accesses.AssignAccessesToRole(roles.Roles{ID: 1})
+	ras := role_accesses.AssignAccessesToRole(roles.Role{ID: 1})
 	err = tx.Create(&ras).Error
 	if err != nil {
 		log.Println("create role accesses while registration err:", err.Error())

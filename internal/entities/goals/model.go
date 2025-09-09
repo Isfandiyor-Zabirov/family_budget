@@ -23,7 +23,7 @@ type Goals struct {
 	TotalBudget     float64        `gorm:"column:total_budget" json:"total_budget"`         // сколько бюджета нужен для выполнение цели
 	RemainingBudget float64        `gorm:"column:remaining_budget" json:"remaining_budget"` // сколько бюджета осталось
 	Status          string         `gorm:"column:status" json:"status"`
-	DueDate         *time.Time     `gorm:"column:due_date" json:"due_date"`
+	DueDate         string         `gorm:"column:due_date" json:"due_date"`
 	CreatedAt       *time.Time     `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt       *time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `gorm:"index" json:"-"`

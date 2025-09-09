@@ -9,22 +9,23 @@ import (
 )
 
 type User struct {
-	ID         int            `gorm:"column:id;primary_key;autoIncrement" json:"id"`
-	RoleID     int            `gorm:"column:role_id"  json:"role_id"`
-	FamilyID   int            `gorm:"column:family_id" json:"family_id"`
-	Name       string         `gorm:"column:name"  json:"name"`
-	Surname    string         `gorm:"column:surname"  json:"surname"`
-	MiddleName string         `gorm:"column:middle_name" json:"middle_name"`
-	Phone      string         `gorm:"column:phone"  json:"phone"`
-	Email      string         `gorm:"column:email" json:"email"`
-	Login      string         `gorm:"column:login;unique"  json:"login"`
-	Password   string         `gorm:"column:password"  json:"password"`
-	Limit      float64        `gorm:"column:limit" json:"limit"`
-	CreatedAt  *time.Time     `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt  *time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
-	DeletedAt  gorm.DeletedAt `gorm:"index" json:"-"`
-	FamilyFK   family.Family  `gorm:"foreignKey:FamilyID" json:"-"`
-	RoleFK     roles.Roles    `gorm:"foreignKey:RoleID" json:"-"`
+	ID             int            `gorm:"column:id;primary_key;autoIncrement" json:"id"`
+	RoleID         int            `gorm:"column:role_id"  json:"role_id"`
+	FamilyID       int            `gorm:"column:family_id" json:"family_id"`
+	Name           string         `gorm:"column:name"  json:"name"`
+	Surname        string         `gorm:"column:surname"  json:"surname"`
+	MiddleName     string         `gorm:"column:middle_name" json:"middle_name"`
+	Phone          string         `gorm:"column:phone"  json:"phone"`
+	Email          string         `gorm:"column:email" json:"email"`
+	Login          string         `gorm:"column:login;unique"  json:"login"`
+	Password       string         `gorm:"column:password"  json:"password"`
+	Limit          float64        `gorm:"column:limit" json:"limit"`
+	RemainingLimit float64        `gorm:"column:remaining_limit" json:"remaining_limit"`
+	CreatedAt      *time.Time     `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt      *time.Time     `gorm:"autoUpdateTime" json:"updated_at"`
+	DeletedAt      gorm.DeletedAt `gorm:"index" json:"-"`
+	FamilyFK       family.Family  `gorm:"foreignKey:FamilyID" json:"-"`
+	RoleFK         roles.Role     `gorm:"foreignKey:RoleID" json:"-"`
 }
 
 func (*User) TableName() string {
@@ -40,7 +41,7 @@ type UserResp struct {
 type Filters struct {
 	FamilyID    int     // for internal only
 	Search      *string `form:"search"`
-	RoleID      *int    `form:"search"`
+	RoleID      *int    `form:"role_id"`
 	CurrentPage int     `form:"current_page"`
 	PageLimit   int     `form:"page_limit"`
 }

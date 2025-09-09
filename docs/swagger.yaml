@@ -1,5 +1,65 @@
 basePath: /api/v1
 definitions:
+  financial_event_categories.FinancialEventCategories:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      family_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  financial_events.FinancialEvent:
+    properties:
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      family_id:
+        type: integer
+      id:
+        type: integer
+      inflow:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  goals.Goals:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      family_id:
+        description: к какой семье принадлежит
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      remaining_budget:
+        description: сколько бюджета осталось
+        type: number
+      status:
+        type: string
+      total_budget:
+        description: сколько бюджета нужен для выполнение цели
+        type: number
+      updated_at:
+        type: string
+    type: object
   middleware.Login:
     properties:
       captcha:
@@ -29,25 +89,6 @@ definitions:
       user_id:
         type: string
     type: object
-  response.PaginatedResponse:
-    properties:
-      data: {}
-      message:
-        type: string
-      pagination:
-        $ref: '#/definitions/response.Pagination'
-      success:
-        type: boolean
-    type: object
-  response.Pagination:
-    properties:
-      current_page:
-        type: integer
-      total_pages:
-        type: integer
-      total_rows:
-        type: integer
-    type: object
   response.ResponseModel:
     properties:
       data: {}
@@ -56,10 +97,68 @@ definitions:
       success:
         type: boolean
     type: object
+  role_accesses.AccessGroupWithAccesses:
+    properties:
+      access_group_id:
+        type: integer
+      access_ids:
+        items:
+          type: integer
+        type: array
+    type: object
+  role_accesses.CreateRoleWithAccessesReq:
+    properties:
+      accesses:
+        items:
+          $ref: '#/definitions/role_accesses.AccessGroupWithAccesses'
+        type: array
+      role:
+        $ref: '#/definitions/roles.Role'
+    type: object
+  roles.Access:
+    properties:
+      active:
+        type: boolean
+      id:
+        type: integer
+    type: object
+  roles.AccessGroupWithAccesses:
+    properties:
+      accesses:
+        items:
+          $ref: '#/definitions/roles.Access'
+        type: array
+      id:
+        type: integer
+    type: object
+  roles.Role:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      family_id:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  roles.UpdateRoleWithAccessesReq:
+    properties:
+      access_list:
+        items:
+          $ref: '#/definitions/roles.AccessGroupWithAccesses'
+        type: array
+      role:
+        $ref: '#/definitions/roles.Role'
+    type: object
 externalDocs:
   description: OpenAPI
   url: https://swagger.io/resources/open-api/
-host: localhost:8000
+host: 10.192.9.236:8000
 info:
   contact:
     email: isfandiyor.zabirov.sh@gmail.com
@@ -73,7 +172,32 @@ info:
   title: Family Budget API
   version: "1.0"
 paths:
-  /api/v1/financial_event_categories:
+  /accesses/{role_id}:
+    get:
+      operationId: get-role-with-accesses-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение роли и всех его доступов по role_id
+      tags:
+      - Роли и доступы
+  /financial_event_categories:
     get:
       description: Возвращает постраничный список категорий, принадлежащих семье пользователя
       operationId: get-financial-event-category-list
@@ -98,7 +222,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.PaginatedResponse'
+            $ref: '#/definitions/response.ResponseModel'
         "400":
           description: Неверные параметры запроса
           schema:
@@ -108,24 +232,19 @@ paths:
           schema:
             $ref: '#/definitions/response.ResponseModel'
       security:
-      - JWT: []
+      - BearerAuth: []
       summary: Получение списка категорий финансовых событий
       tags:
       - Категории финансовых событий
     post:
       operationId: create-financial-event-category
       parameters:
-      - description: Название категории
+      - description: Данные для создания категории
         in: body
-        name: name
+        name: category
         required: true
         schema:
-          type: string
-      - description: Описание категории
-        in: body
-        name: description
-        schema:
-          type: string
+          $ref: '#/definitions/financial_event_categories.FinancialEventCategories'
       produces:
       - application/json
       responses:
@@ -145,17 +264,12 @@ paths:
     put:
       operationId: update-financial-event-category
       parameters:
-      - description: Название категории
+      - description: Данные для обновлении категории
         in: body
-        name: name
+        name: category
         required: true
         schema:
-          type: string
-      - description: Описание категории
-        in: body
-        name: description
-        schema:
-          type: string
+          $ref: '#/definitions/financial_event_categories.FinancialEventCategories'
       produces:
       - application/json
       responses:
@@ -172,7 +286,7 @@ paths:
       summary: Изменение категории финансовых событии
       tags:
       - Категории финансовых событий
-  /api/v1/financial_event_categories/{id}:
+  /financial_event_categories/{id}:
     delete:
       description: Удаляет категорию по её ID
       operationId: delete-financial-event-category
@@ -239,7 +353,163 @@ paths:
       summary: Получения категории финансовых событий
       tags:
       - Категории финансовых событий
-  /api/v1/get_me:
+  /financial_events:
+    get:
+      description: Возвращает постраничный список, принадлежащих семье пользователя
+      operationId: get-financial-event-list
+      parameters:
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество элементов на странице
+        in: query
+        name: limit
+        type: integer
+      - description: Текст для поиска по названию и описанию
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверные параметры запроса
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - BearerAuth: []
+      summary: Получение списка финансовых событий
+      tags:
+      - Финансовые события
+    post:
+      operationId: create-financial-event
+      parameters:
+      - description: Данные для создания финансовой событии
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/financial_events.FinancialEvent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Создание финансовой событии
+      tags:
+      - Финансовая события
+    put:
+      operationId: update-financial-event
+      parameters:
+      - description: Данные для обновлении финансовой событии
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/financial_events.FinancialEvent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Изменение финансовой событии
+      tags:
+      - Финансовая события
+  /financial_events/{id}:
+    delete:
+      description: Удаляет по её ID
+      operationId: delete-financial-event
+      parameters:
+      - description: ID для удаления
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Финансовая события не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Удаление
+      tags:
+      - Финансовая события
+    get:
+      description: Получения по её ID
+      operationId: get-financial-event
+      parameters:
+      - description: ID для получения
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение финансового события
+      tags:
+      - Финансовые события
+  /get_me:
     get:
       operationId: get-me
       produces:
@@ -258,7 +528,235 @@ paths:
       summary: Получение данные текущего пользователя
       tags:
       - Пользователи
-  /api/v1/register:
+  /goals:
+    get:
+      description: Получает список целей по фильтрам
+      operationId: get-goals-list
+      parameters:
+      - description: Поиск по названию и описанию
+        in: query
+        name: search
+        type: string
+      - description: Статус цели
+        in: query
+        name: status
+        type: string
+      - description: Дата выполнения 'от' (YYYY-MM-DD)
+        in: query
+        name: due_date_from
+        type: string
+      - description: Дата выполнения 'до' (YYYY-MM-DD)
+        in: query
+        name: due_date_to
+        type: string
+      - description: Номер страницы
+        in: query
+        name: current_page
+        type: integer
+      - description: Количество на странице
+        in: query
+        name: page_limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение списка целей
+      tags:
+      - Цели
+    post:
+      consumes:
+      - application/json
+      description: Создает новую финансовую цель для семьи
+      operationId: create-goal
+      parameters:
+      - description: Данные для создания цели
+        in: body
+        name: '{object}'
+        required: true
+        schema:
+          $ref: '#/definitions/goals.Goals'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверные входные данные
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Создание новой цели
+      tags:
+      - Цели
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные существующей цели по ее ID из тела запроса
+      operationId: update-goal
+      parameters:
+      - description: Данные для обновления цели (включая ID)
+        in: body
+        name: '{object}'
+        required: true
+        schema:
+          $ref: '#/definitions/goals.Goals'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверные данные
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Цель не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Обновление цели
+      tags:
+      - Цели
+  /goals/{id}:
+    delete:
+      description: Удаляет цель по ее ID
+      operationId: delete-goal
+      parameters:
+      - description: ID Цели
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Цель не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Удаление цели
+      tags:
+      - Цели
+    get:
+      description: Получает детальную информацию о цели по ее ID
+      operationId: get-goal
+      parameters:
+      - description: ID Цели
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "403":
+          description: Доступ запрещен
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "404":
+          description: Цель не найдена
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение информации о цели
+      tags:
+      - Цели
+  /login:
+    post:
+      operationId: authorize-user
+      parameters:
+      - description: Даные для авторизации
+        in: body
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/middleware.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/middleware.ResponseStruct'
+        "400":
+          description: reason
+          schema:
+            type: string
+        "401":
+          description: reason
+          schema:
+            type: string
+        "402":
+          description: reason
+          schema:
+            type: string
+      summary: Авторизация пользователя
+      tags:
+      - Регистрация и Авторизация
+  /register:
     post:
       operationId: register
       parameters:
@@ -328,38 +826,423 @@ paths:
       summary: Регистарция новых семей
       tags:
       - Регистрация
-  /visor/login:
-    post:
-      operationId: authorize-user
+  /role/{id}:
+    delete:
+      operationId: delete-role
       parameters:
-      - description: Даные для авторизации
-        in: body
+      - description: ID
+        in: path
         name: id
         required: true
-        schema:
-          $ref: '#/definitions/middleware.Login'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/middleware.ResponseStruct'
+            $ref: '#/definitions/response.ResponseModel'
         "400":
-          description: reason
+          description: Bad Request
           schema:
-            type: string
-        "401":
-          description: reason
-          schema:
-            type: string
-        "402":
-          description: reason
-          schema:
-            type: string
-      summary: Авторизация пользователя
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Удаление роли
       tags:
-      - Регистрация и Авторизация
+      - Роли и доступы
+    get:
+      operationId: get-role-by-id
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение данных роли по ID
+      tags:
+      - Роли и доступы
+  /role_with_accesses:
+    post:
+      operationId: create-role-with-accesses
+      parameters:
+      - description: Даные пользователя
+        in: body
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/role_accesses.CreateRoleWithAccessesReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Создание Роли с доступами
+      tags:
+      - Роли и доступы
+    put:
+      operationId: update-role-with-accesses
+      parameters:
+      - description: Обновленные данные роля
+        in: body
+        name: id
+        required: true
+        schema:
+          $ref: '#/definitions/roles.UpdateRoleWithAccessesReq'
+      - description: Bearer + Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Изменение Роли с доступами
+      tags:
+      - Роли и доступы
+  /roles:
+    get:
+      operationId: get_roles
+      parameters:
+      - description: ID роли
+        in: query
+        name: role_id
+        type: integer
+      - description: Поиск по части названия роли
+        in: query
+        name: name
+        type: string
+      - description: Поиск по части описания роли
+        in: query
+        name: description
+        type: string
+      - description: Страница
+        in: query
+        name: page
+        type: integer
+      - description: Количество рядов на странице(для пагинации)
+        in: query
+        name: page_limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение данных о ролях по фильтру с пагинацией и фильтрацией. Данные
+        всегда только по текущей семье.
+      tags:
+      - Роли и доступы
+  /transactions:
+    get:
+      operationId: get-transaction-list
+      parameters:
+      - description: Поиск
+        in: query
+        name: search
+        type: string
+      - description: ID пользователя
+        in: query
+        name: user_id
+        type: integer
+      - description: ID финансовой событии
+        in: query
+        name: financial_event_id
+        type: integer
+      - description: ID цели
+        in: query
+        name: goal_id
+        type: integer
+      - description: Дата с (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: Дата до (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение списка всех членов семьи (пользователей)
+      tags:
+      - Операции
+    post:
+      operationId: create-transaction
+      parameters:
+      - description: ID дохода или расхода
+        in: body
+        name: financial_event_id
+        schema:
+          type: integer
+      - description: ID цели
+        in: body
+        name: goal_id
+        schema:
+          type: integer
+      - description: Сумма
+        in: body
+        name: amount
+        required: true
+        schema:
+          type: number
+      - description: Описание
+        in: body
+        name: description
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Добавление членов семьи (пользователей)
+      tags:
+      - Операции
+  /users:
+    get:
+      operationId: get-user-list
+      parameters:
+      - description: Поиск по ФИО, номеру телефона, эл. почты и логина
+        in: query
+        name: search
+        type: string
+      - description: ID роли
+        in: query
+        name: role_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Получение списка всех членов семьи (пользователей)
+      tags:
+      - Семейство (Пользователи)
+    post:
+      operationId: create-user
+      parameters:
+      - description: Имя
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Фамилия
+        in: body
+        name: surname
+        required: true
+        schema:
+          type: string
+      - description: Отчетсво
+        in: body
+        name: middle_name
+        schema:
+          type: string
+      - description: ID роли
+        in: body
+        name: role_id
+        required: true
+        schema:
+          type: integer
+      - description: Номер телефона
+        in: body
+        name: phone
+        schema:
+          type: string
+      - description: Электронная почта
+        in: body
+        name: email
+        schema:
+          type: string
+      - description: Логин
+        in: body
+        name: login
+        required: true
+        schema:
+          type: string
+      - description: Пароль
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Добавление членов семьи (пользователей)
+      tags:
+      - Семейство (Пользователи)
+    put:
+      operationId: update-user
+      parameters:
+      - description: ID пользователя
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: Имя
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      - description: Фамилия
+        in: body
+        name: surname
+        required: true
+        schema:
+          type: string
+      - description: Отчетсво
+        in: body
+        name: middle_name
+        schema:
+          type: string
+      - description: ID роли
+        in: body
+        name: role_id
+        required: true
+        schema:
+          type: integer
+      - description: Номер телефона
+        in: body
+        name: phone
+        schema:
+          type: string
+      - description: Электронная почта
+        in: body
+        name: email
+        schema:
+          type: string
+      - description: Логин
+        in: body
+        name: login
+        required: true
+        schema:
+          type: string
+      - description: Пароль
+        in: body
+        name: password
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Изменение членов семьи (пользователей)
+      tags:
+      - Семейство (Пользователи)
+  /users/{id}:
+    delete:
+      operationId: delete-user
+      parameters:
+      - description: ID пользователя
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ResponseModel'
+      security:
+      - JWT: []
+      summary: Удаление членов семьи (пользователей)
+      tags:
+      - Семейство (Пользователи)
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.

@@ -31,17 +31,16 @@ func getFec(id int) (FinancialEventCategories, error) {
 }
 
 func getList(filters Filters) (resp []FinancialEventCategories, totalRows int64, err error) {
+	resp = []FinancialEventCategories{}
 	query := database.Postgres().Table("financial_event_categories fec").
 		Where("fec.family_id = ? and fec.deleted_at is null", filters.FamilyID)
 
-	if filters.CurrentPage != 0 {
-		page := 1
-		filters.CurrentPage = page
+	if filters.CurrentPage == 0 {
+		filters.CurrentPage = 1
 	}
 
 	if filters.PageLimit == 0 {
-		pageLimit := 20
-		filters.PageLimit = pageLimit
+		filters.PageLimit = 20
 	}
 
 	if filters.Search != nil {
