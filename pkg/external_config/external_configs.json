@@ -1,10 +1,10 @@
 {
   "postgre_sql": {
-    "host": "localhost",
-    "user": "postgres",
+    "host": "dpg-d2u44gmr433s73durjlg-a",
+    "user": "family_budget_pkfn_user",
     "port": "5432",
-    "db_name": "family_budget",
-    "pass": "postgres",
+    "db_name": "family_budget_pkfn",
+    "pass": "PuDDuzL5l5hI1kPYU5RUyTjQKcH5CRl0",
     "ssl_mode": "disable"
   }
 }
